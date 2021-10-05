@@ -18,11 +18,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'You have pushed the button this many times:',
-              ),
               Text(
-                '8',
+                '12 March 2022',
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],

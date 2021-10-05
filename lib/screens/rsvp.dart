@@ -108,7 +108,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               decoration: _groomImage(),
-              child: _groomSide(),
+              // child: _groomSide(),
             ),
           ),
         ),
@@ -125,7 +125,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               decoration: _brideImage(),
-              child: _brideSide(),
+              // child: _brideSide(),
             ),
           ),
         ),
@@ -138,7 +138,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Text(''),
+        Text('wewe'),
       ],
     );
   }
@@ -148,7 +148,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Text(''),
+        Text('wewe'),
       ],
     );
   }

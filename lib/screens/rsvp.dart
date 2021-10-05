@@ -18,14 +18,16 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _groomAnimationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    final Animation<double> _groomCurve =
-    CurvedAnimation(parent: _groomAnimationController, curve: Curves.elasticOut);
+    _groomAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 600), vsync: this);
+    final Animation<double> _groomCurve = CurvedAnimation(
+        parent: _groomAnimationController, curve: Curves.elasticOut);
     _groomAnimation = IntTween(begin: 1, end: 6).animate(_groomCurve);
     _groomAnimation.addListener(() => setState(() {}));
-    _brideAnimationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
-    final Animation<double> _brideCurve =
-    CurvedAnimation(parent: _brideAnimationController, curve: Curves.elasticOut);
+    _brideAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 600), vsync: this);
+    final Animation<double> _brideCurve = CurvedAnimation(
+        parent: _brideAnimationController, curve: Curves.elasticOut);
     _brideAnimation = IntTween(begin: 1, end: 6).animate(_brideCurve);
     _brideAnimation.addListener(() => setState(() {}));
   }
@@ -63,8 +65,8 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
-              color: Colors.blueAccent,
-                child: _groomSide()
+              decoration: _groomImage(),
+              child: _groomSide(),
             ),
           ),
         ),
@@ -80,9 +82,8 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
-              color: Colors.pinkAccent,
-                child: _brideSide()
-
+              decoration: _brideImage(),
+              child: _brideSide(),
             ),
           ),
         ),
@@ -106,8 +107,8 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
-              color: Colors.blueAccent,
-              child: _groomSide()
+              decoration: _groomImage(),
+              child: _groomSide(),
             ),
           ),
         ),
@@ -123,7 +124,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
-              color: Colors.pinkAccent,
+              decoration: _brideImage(),
               child: _brideSide(),
             ),
           ),
@@ -132,22 +133,49 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
     );
   }
 
-  Widget _groomSide(){
+  Widget _groomSide() {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-         Text('Groom'),
+        Text(''),
       ],
     );
   }
-  Widget _brideSide(){
+
+  Widget _brideSide() {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Text('Bride'),
+        Text(''),
       ],
+    );
+  }
+
+  BoxDecoration _brideImage() {
+    return BoxDecoration(
+      image: DecorationImage(
+        fit: BoxFit.cover,
+        image: const AssetImage('assets/images/bride.jpg'),
+        colorFilter: ColorFilter.mode(
+          Colors.pink.withOpacity(0.5),
+          BlendMode.hardLight,
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _groomImage() {
+    return BoxDecoration(
+      image: DecorationImage(
+        fit: BoxFit.cover,
+        image: const AssetImage('assets/images/groom.jpg'),
+        colorFilter: ColorFilter.mode(
+          Colors.blue.withOpacity(0.5),
+          BlendMode.hardLight,
+        ),
+      ),
     );
   }
 }

@@ -18,11 +18,15 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _groomAnimationController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    _groomAnimation = IntTween(begin: 1, end: 6).animate(_groomAnimationController);
+    _groomAnimationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    final Animation<double> _groomCurve =
+    CurvedAnimation(parent: _groomAnimationController, curve: Curves.elasticOut);
+    _groomAnimation = IntTween(begin: 1, end: 6).animate(_groomCurve);
     _groomAnimation.addListener(() => setState(() {}));
-    _brideAnimationController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    _brideAnimation = IntTween(begin: 1, end: 6).animate(_brideAnimationController);
+    _brideAnimationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    final Animation<double> _brideCurve =
+    CurvedAnimation(parent: _brideAnimationController, curve: Curves.elasticOut);
+    _brideAnimation = IntTween(begin: 1, end: 6).animate(_brideCurve);
     _brideAnimation.addListener(() => setState(() {}));
   }
 
@@ -75,7 +79,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
-              color: Colors.pink,
+              color: Colors.pinkAccent,
             ),
           ),
         ),

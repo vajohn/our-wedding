@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weddingrsvp/util/router.dart';
 import 'package:weddingrsvp/util/router.gr.dart';
-import 'package:auto_route/annotations.dart';
 
 void main() {
   runApp(MyApp());

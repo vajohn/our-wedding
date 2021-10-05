@@ -64,6 +64,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               color: Colors.blueAccent,
+                child: _groomSide()
             ),
           ),
         ),
@@ -80,6 +81,8 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               color: Colors.pinkAccent,
+                child: _brideSide()
+
             ),
           ),
         ),
@@ -104,6 +107,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               color: Colors.blueAccent,
+              child: _groomSide()
             ),
           ),
         ),
@@ -120,9 +124,29 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               color: Colors.pinkAccent,
+              child: _brideSide(),
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _groomSide(){
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+         Text('Groom'),
+      ],
+    );
+  }
+  Widget _brideSide(){
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Text('Bride'),
       ],
     );
   }

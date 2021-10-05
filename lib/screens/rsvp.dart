@@ -138,7 +138,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Text('wewe'),
+        Text(''),
       ],
     );
   }
@@ -148,7 +148,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Text('wewe'),
+        Text(''),
       ],
     );
   }

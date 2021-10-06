@@ -1,11 +1,11 @@
 {
-    "name": "weddingrsvp",
-    "short_name": "weddingrsvp",
+    "name": "Our Wedding",
+    "short_name": "ourwedding",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Faizal and Stacey's wedding app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

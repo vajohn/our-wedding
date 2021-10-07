@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                '12 March 2022',
+                'Sat 12 March 2022',
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],

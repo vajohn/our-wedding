@@ -160,7 +160,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
         image: const AssetImage('assets/images/bride.jpg'),
         colorFilter: ColorFilter.mode(
           Colors.pink.withOpacity(0.5),
-          BlendMode.hardLight,
+          BlendMode.darken,
         ),
       ),
     );
@@ -173,7 +173,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
         image: const AssetImage('assets/images/groom.jpg'),
         colorFilter: ColorFilter.mode(
           Colors.blue.withOpacity(0.5),
-          BlendMode.hardLight,
+          BlendMode.darken,
         ),
       ),
     );

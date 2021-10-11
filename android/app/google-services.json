@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "933189704203",
+    "project_id": "our-wedding-e4538",
+    "storage_bucket": "our-wedding-e4538.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933189704203:android:08d3d40f006137b3bb850e",
+        "android_client_info": {
+          "package_name": "com.primosile.weddingrsvp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933189704203-qr3retn3idm1l9um2goa0bq029la70a2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYuMFpDwbrVW6csN-xJD_rihWK1etsxBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933189704203-qr3retn3idm1l9um2goa0bq029la70a2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

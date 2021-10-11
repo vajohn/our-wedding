@@ -2,6 +2,7 @@
     package="com.primosile.weddingrsvp">
    <application
         android:label="Our Wedding"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

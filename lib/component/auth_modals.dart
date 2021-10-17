@@ -160,7 +160,8 @@ class AuthDialog {
               content: SingleChildScrollView(
                 child: Form(
                     key: _formKey,
-                    child: Column(
+                    child:
+                    Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [

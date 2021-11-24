@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -91,11 +90,8 @@ class AuthDialog {
                 IconButton(
                   onPressed: () {
                     loading = true;
-                    AuthService()
-                        .signInWithGoogle(context)
-                        .then(
-                            (response) => setState(() => loading = response));
-                  },                  icon: const GradientIcon(
+                  },
+                  icon: const GradientIcon(
                     material: true,
                     size: 20,
                     icon: FontAwesomeIcons.google,
@@ -113,10 +109,6 @@ class AuthDialog {
                 IconButton(
                   onPressed: () {
                     loading = true;
-                    AuthService()
-                        .signInWithFacebook(context)
-                        .then(
-                            (response) => setState(() => loading = response));
                   },
                   icon: const FaIcon(
                     FontAwesomeIcons.facebookF,
@@ -160,8 +152,7 @@ class AuthDialog {
               content: SingleChildScrollView(
                 child: Form(
                     key: _formKey,
-                    child:
-                    Column(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [

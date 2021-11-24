@@ -1,48 +1,55 @@
-
 import 'package:auto_route/annotations.dart';
-import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:weddingrsvp/screens/screens.dart';
-
-class RouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    // Getting arguments passed in while calling Navigator.pushNamed
-    final args = settings.arguments;
-
-    switch (settings.name) {
-      case '/':
-      case HomeScreen.route:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case LoginScreen.route:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
-      case SplitRsvp.route:
-        return MaterialPageRoute(builder: (_) => const SplitRsvp());
-
-      default:
-      // If there is no such named route in the switch statement, e.g. /third
-        return _errorRoute();
-    }
-  }
-
-  static Route<dynamic> _errorRoute() {
-    return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
-        body: const Center(
-          child: Text('ERROR'),
-        ),
-      );
-    });
-  }
-}
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
     AutoRoute(page: HomeScreen, initial: true),
-    AutoRoute(page: LoginScreen),
+    AutoRoute(path: 'login', name: 'LoginRoute', page: LoginScreen),
     AutoRoute(page: SplitRsvp),
+    AutoRoute(
+      page: GuestRegistration,
+      name: 'GuestRegistrationRouter',
+      path: 'registration',
+    ),
+    AutoRoute(
+        path: 'dashboard',
+        name: 'DashboardRouter',
+        page: Dashboard,
+        children: [
+          AutoRoute(path: 'bride', page: BrideGuests, initial: true),
+        ]),
+    AutoRoute(
+        path: 'admin',
+        name: 'AdminDashboardRouter',
+        page: AdminDashboard,
+        guards: [
+          AuthGuard
+        ],
+        children: [
+          AutoRoute(path: 'menu/main', page: MainMenu, initial: true),
+          AutoRoute(path: 'menu/starter', page: StarterMenu),
+          AutoRoute(path: 'bride', page: BrideGuests),
+          AutoRoute(path: 'groom', page: GroomGuests)
+        ]),
   ],
 )
 class $AppRouter {}
+
+class AuthGuard extends AutoRouteGuard {
+  bool authenticated = true;
+
+  @override
+  void onNavigation(NavigationResolver resolver, StackRouter router) {
+// the navigation is paused until resolver.next() is called with either
+// true to resume/continue navigation or false to abort navigation
+    if (authenticated) {
+// if user is authenticated we continue
+      resolver.next(true);
+    } else {
+// we redirect the user to our login page
+      router.replaceNamed('login');
+    }
+  }
+}

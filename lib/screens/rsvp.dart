@@ -1,4 +1,12 @@
+import 'package:auto_route/src/router/auto_router_x.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:weddingrsvp/models/guests.dart';
+import 'package:weddingrsvp/service/data.dart';
+import 'package:weddingrsvp/util/router.gr.dart';
+
+enum RsvpSide { none, groom, bride }
 
 class SplitRsvp extends StatefulWidget {
   static const String route = '/rsvp';
@@ -14,6 +22,9 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
   late AnimationController _brideAnimationController;
   late Animation _groomAnimation;
   late Animation _brideAnimation;
+  GuestRsvpData? selectedGuest;
+  bool guestSelected = false;
+  RsvpSide chosenSide = RsvpSide.none;
 
   @override
   void initState() {
@@ -66,7 +77,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               decoration: _groomImage(),
-              child: _groomSide(),
+              child: _groomSide(_groomAnimationController.value, context),
             ),
           ),
         ),
@@ -83,7 +94,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               decoration: _brideImage(),
-              child: _brideSide(),
+              child: _brideSide(_brideAnimationController.value, context),
             ),
           ),
         ),
@@ -108,7 +119,10 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             },
             child: Container(
               decoration: _groomImage(),
-              // child: _groomSide(),
+              child: SizedBox(
+                width: 400,
+                child: _groomSide(_groomAnimationController.value, context),
+              ),
             ),
           ),
         ),
@@ -124,8 +138,9 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               }
             },
             child: Container(
+              width: 400,
               decoration: _brideImage(),
-              // child: _brideSide(),
+              child: _brideSide(_brideAnimationController.value, context),
             ),
           ),
         ),
@@ -133,22 +148,38 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
     );
   }
 
-  Widget _groomSide() {
+  Widget _groomSide(double size, BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Text(''),
+      children: [
+        size == 1 ? _dropdownSelector(false) : Text(''),
+        guestSelected && size == 1 && RsvpSide.groom == chosenSide
+            ? ElevatedButton(
+                onPressed: () => _sheet(),
+                child: Text(
+                  'Proceed',
+                ),
+              )
+            : Container(),
       ],
     );
   }
 
-  Widget _brideSide() {
+  Widget _brideSide(double size, BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Text(''),
+      children: [
+        size == 1 ? _dropdownSelector(true) : Text(''),
+        guestSelected && size == 1 && RsvpSide.bride == chosenSide
+            ? ElevatedButton(
+                onPressed: () => _sheet(),
+                child: Text(
+                  'Proceed',
+                ),
+              )
+            : Container(),
       ],
     );
   }
@@ -177,5 +208,146 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  _dropdownSelector(bool side) {
+    return SizedBox(
+      width: 200,
+      child: DropdownSearch<GuestRsvpData>(
+        showSearchBox: true,
+        isFilteredOnline: true,
+        showClearButton: true,
+        dropdownSearchDecoration: InputDecoration(
+          labelText: (side ? 'Bride' : 'Groom') + ' Guest',
+          contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+          border: OutlineInputBorder(),
+        ),
+        popupItemBuilder: _listItemView,
+        dropdownBuilder: _selectedItemView,
+        onFind: (String? filter) async {
+          List<GuestRsvpData> response;
+
+          if (filter!.isEmpty) {
+            response = await DataService().mockGuestListBySide(side);
+          } else {
+            List<GuestRsvpData> _toBeFiltered =
+                await DataService().mockGuestListBySide(side);
+            response = _toBeFiltered
+                .where((element) =>
+                    element.name!.toLowerCase().contains(filter.toLowerCase()))
+                .toList();
+          }
+
+          return response;
+        },
+        onChanged: (GuestRsvpData? data) {
+          chosenSide = side ? RsvpSide.bride : RsvpSide.groom;
+          selectedGuest = data!;
+          setState(() {
+            guestSelected = true;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _selectedItemView(BuildContext context, GuestRsvpData? item) {
+    if (item == null) {
+      return Container();
+    }
+
+    return Container(
+      child: (item.name == null)
+          ? ListTile(
+              contentPadding: EdgeInsets.all(0),
+              leading: CircleAvatar(),
+              title: Text(
+                "No item selected",
+              ),
+            )
+          : ListTile(
+              contentPadding: EdgeInsets.all(
+                0,
+              ),
+              title: Text(
+                item.name ?? '',
+              ),
+            ),
+    );
+  }
+
+  Widget _listItemView(
+      BuildContext context, GuestRsvpData? item, bool isSelected) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
+      child: ListTile(
+        title: Text(
+          item?.name ?? '',
+        ),
+        subtitle: Text(
+          item?.additional?.toString() ?? '',
+        ),
+        leading: Container(
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(colors: [
+                Colors.black45,
+                Colors.grey,
+              ], begin: Alignment.bottomLeft, end: Alignment.topRight)),
+          child: CircleAvatar(
+            child: Icon(FontAwesomeIcons.user),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future _sheet() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Text(
+                    'Are you ${selectedGuest!.name}, if not cancel and select your name again.'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Text(
+                    'Please note that once selected your name will be no longer here but checked in'),
+              ),
+              ListTile(
+                leading: new Icon(
+                  Icons.cancel_outlined,
+                ),
+                title: new Text(
+                  'Cancel',
+                ),
+                onTap: () {
+                  guestSelected = false;
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: new Icon(
+                  FontAwesomeIcons.bookOpen,
+                ),
+                title: new Text(
+                  'RSVP',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.router.push(GuestRegistrationRouter(guestRsvpData: selectedGuest));
+                },
+              ),
+            ],
+          );
+        });
   }
 }

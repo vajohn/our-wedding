@@ -1,0 +1,52 @@
+{
+  "guests": [
+    {
+      "name": "Trulin Munyaradzi",
+      "uuid": "1",
+      "side": "bride",
+      "additional": 0,
+      "dependant": false,
+      "guardian": false
+    },
+    {
+      "name": "Elpha Munyaradzi",
+      "uuid": "2",
+      "side": "bride",
+      "additional": 4,
+      "dependant": false,
+      "guardian": true
+    },
+    {
+      "name": "Dalton Munyaradzi",
+      "uuid": "3",
+      "side": "bride",
+      "dependant": false,
+      "guardian": false,
+      "additional": 1
+    },
+    {
+      "name": "Rocky Mabhena",
+      "uuid": "4",
+      "side": "groom",
+      "dependant": false,
+      "guardian": false,
+      "additional": 2
+    },
+    {
+      "name": "Mary John",
+      "uuid": "5",
+      "side": "groom",
+      "dependant": false,
+      "guardian": true,
+      "additional": 4
+    },
+    {
+      "name": "Yusuf Chiwala",
+      "uuid": "6",
+      "side": "groom",
+      "dependant": false,
+      "guardian": false,
+      "additional": 0
+    }
+  ]
+}

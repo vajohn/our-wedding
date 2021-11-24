@@ -1,9 +1,11 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math' as math;
 
-import 'package:weddingrsvp/component/auth_modals.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/src/provider.dart';
+import 'package:weddingrsvp/component/menus/menus.dart';
+import 'package:weddingrsvp/providers/current_user.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Navbar extends StatefulWidget implements PreferredSizeWidget {
   final String screen;
@@ -55,93 +57,20 @@ Row _appTitle(String screen) {
   );
 }
 
-enum LandingStates { login, rsvp }
-
-void selectModal(BuildContext context, LandingStates path) {
-  switch (path.index) {
-    case 0:
-      AutoRouter.of(context).pushNamed('/login-screen');
-      break;
-    case 1:
-      AuthDialog().rsvp(context);
-      break;
-    default:
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No such Action'),
-        ),
-      );
-  }
-}
-
 List<Widget> selectMenu(bool orientation, String menu, BuildContext context) {
+  if(context.watch<CurrentUserData>().userData != null){
+    print('>>>>>> ${context.watch<CurrentUserData>().userData!.roles.toList()}');
+
+  }
   switch (menu) {
     case 'Login':
       return [];
-    case'Dashboard':
-      if(menu == ' Dashboard'){
-        //todo put check for role
-        return [];
-      } else {
-        return [];
-      }
+    case 'Dashboard':
+      return guestMenu(orientation, context);
+    case 'Admin':
+      return adminMenu(orientation, context);
     default:
-      return _homeMenu(orientation, context);
-  }
-}
-
-List<Widget> _homeMenu(bool orientation, BuildContext context) {
-  if (orientation) {
-    return [
-      TextButton(
-        child: const Text(
-          'Login',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-        onPressed: () => selectModal(context, LandingStates.values.first),
-      ),
-      TextButton(
-        child: const Text(
-          'RSVP',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-        onPressed: () => selectModal(context, LandingStates.values.last),
-      ),
-    ];
-  } else {
-    return [
-      PopupMenuButton<LandingStates>(
-        onSelected: (LandingStates result) => selectModal(context, result),
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<LandingStates>>[
-          PopupMenuItem<LandingStates>(
-            value: LandingStates.login,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Icon(Icons.login),
-                Text('Login'),
-              ],
-            ),
-          ),
-          PopupMenuItem<LandingStates>(
-            value: LandingStates.rsvp,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Icon(Icons.mark_email_read_outlined),
-                Text('RSVP'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ];
+      return homeMenu(orientation, context);
   }
 }
 
@@ -153,6 +82,7 @@ class DesktopAppBar extends AppBar {
           backgroundColor: Colors.transparent,
           actions: selectMenu(true, screen, context),
           title: _appTitle(screen),
+          automaticallyImplyLeading: !kIsWeb,
         );
 }
 
@@ -164,7 +94,8 @@ class TabAppBar extends AppBar {
           backgroundColor: Colors.transparent,
           title: _appTitle(screen),
           actions: selectMenu(true, screen, context),
-        );
+    automaticallyImplyLeading: !kIsWeb,
+  );
 }
 
 class MobileAppBar extends AppBar {
@@ -175,5 +106,6 @@ class MobileAppBar extends AppBar {
           backgroundColor: Colors.transparent,
           title: _appTitle(screen),
           actions: selectMenu(false, screen, context),
-        );
+          automaticallyImplyLeading: !kIsWeb,
+  );
 }

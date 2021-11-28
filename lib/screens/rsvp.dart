@@ -233,8 +233,9 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
             List<GuestRsvpData> _toBeFiltered =
                 await DataService().mockGuestListBySide(side);
             response = _toBeFiltered
-                .where((element) =>
-                    element.name!.toLowerCase().contains(filter.toLowerCase()))
+                .where((guest) =>
+                    guest.firstName!.toLowerCase().contains(filter.toLowerCase())
+                        || guest.surname!.toLowerCase().contains(filter.toLowerCase()))
                 .toList();
           }
 
@@ -257,7 +258,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
     }
 
     return Container(
-      child: (item.name == null)
+      child: (item.fullName() == null)
           ? ListTile(
               contentPadding: EdgeInsets.all(0),
               leading: CircleAvatar(),
@@ -270,7 +271,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
                 0,
               ),
               title: Text(
-                item.name ?? '',
+                item.fullName() ?? '',
               ),
             ),
     );
@@ -284,7 +285,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
       ),
       child: ListTile(
         title: Text(
-          item?.name ?? '',
+          item?.fullName() ?? '',
         ),
         subtitle: Text(
           item?.additional?.toString() ?? '',
@@ -315,7 +316,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: Text(
-                    'Are you ${selectedGuest!.name}, if not cancel and select your name again.'),
+                    'Are you ${selectedGuest!.fullName()}, if not cancel and select your name again.'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

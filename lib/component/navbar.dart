@@ -7,6 +7,8 @@ import 'package:weddingrsvp/component/menus/menus.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'layout.dart';
+
 class Navbar extends StatefulWidget implements PreferredSizeWidget {
   final String screen;
 
@@ -23,17 +25,7 @@ class Navbar extends StatefulWidget implements PreferredSizeWidget {
 class _NavbarState extends State<Navbar> {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 802) {
-          return DesktopAppBar(context, widget.screen);
-        } else if (constraints.maxWidth < 801 && constraints.maxWidth > 480) {
-          return TabAppBar(context, widget.screen);
-        } else {
-          return MobileAppBar(context, widget.screen);
-        }
-      },
-    );
+    return appLayout(DesktopAppBar(context, widget.screen), TabAppBar(context, widget.screen), MobileAppBar(context, widget.screen));
   }
 }
 

@@ -1,7 +1,8 @@
 {
   "guests": [
     {
-      "name": "Trulin Munyaradzi",
+      "firstName": "Trulin",
+      "surname": "Munyaradzi",
       "uuid": "1",
       "side": "bride",
       "additional": 0,
@@ -9,7 +10,8 @@
       "guardian": false
     },
     {
-      "name": "Elpha Munyaradzi",
+      "firstName": "Elpha",
+      "surname": "Munyaradzi",
       "uuid": "2",
       "side": "bride",
       "additional": 4,
@@ -17,7 +19,8 @@
       "guardian": true
     },
     {
-      "name": "Dalton Munyaradzi",
+      "firstName": "Dalton",
+      "surname": "Munyaradzi",
       "uuid": "3",
       "side": "bride",
       "dependant": false,
@@ -25,7 +28,8 @@
       "additional": 1
     },
     {
-      "name": "Rocky Mabhena",
+      "firstName": "Rocky",
+      "surname": "Mabhena",
       "uuid": "4",
       "side": "groom",
       "dependant": false,
@@ -33,7 +37,8 @@
       "additional": 2
     },
     {
-      "name": "Mary John",
+      "firstName": "Mary",
+      "surname": "John",
       "uuid": "5",
       "side": "groom",
       "dependant": false,
@@ -41,7 +46,8 @@
       "additional": 4
     },
     {
-      "name": "Yusuf Chiwala",
+      "firstName": "Yusuf",
+      "surname": "Chiwala",
       "uuid": "6",
       "side": "groom",
       "dependant": false,

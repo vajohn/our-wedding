@@ -20,7 +20,8 @@ class GuestRsvpListData {
 }
 
 class GuestRsvpData {
-  String? name;
+  String? firstName;
+  String? surname;
   String? uuid;
   String? side;
   int? additional;
@@ -28,7 +29,8 @@ class GuestRsvpData {
   bool? guardian;
 
   GuestRsvpData(
-      {this.name,
+      {this.firstName,
+      this.surname,
       this.uuid,
       this.side,
       this.additional,
@@ -36,7 +38,8 @@ class GuestRsvpData {
       this.guardian});
 
   GuestRsvpData.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
+    firstName = json['firstName'];
+    surname = json['surname'];
     uuid = json['uuid'];
     side = json['side'];
     additional = json['additional'];
@@ -46,7 +49,8 @@ class GuestRsvpData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
+    data['firstName'] = this.firstName;
+    data['surname'] = this.surname;
     data['uuid'] = this.uuid;
     data['side'] = this.side;
     data['additional'] = this.additional;
@@ -60,6 +64,10 @@ class GuestRsvpData {
   }
 
   bool isNameEqual(String name) {
-    return this.name == name;
+    return this.firstName! + ' ' + this.surname! == name;
+  }
+
+  String? fullName(){
+    return this.firstName! + ' ' + this.surname!;
   }
 }

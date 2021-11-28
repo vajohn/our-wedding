@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:weddingrsvp/component/components.dart';
 import 'package:weddingrsvp/models/guests.dart';
 
@@ -13,9 +15,16 @@ class GuestRegistration extends StatefulWidget {
 }
 
 class _GuestRegistrationState extends State<GuestRegistration> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   List<Map<String, dynamic>> _values = [];
+  List<bool> dependant = [];
+  List<bool> emailOrPhone = [];
+
+  @override
+  void initState() {
+    dependant = _dependantList(widget.guestRsvpData);
+    emailOrPhone = _dependantList(widget.guestRsvpData);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +38,13 @@ class _GuestRegistrationState extends State<GuestRegistration> {
 
   _buildRegistration() {
     if (widget.guestRsvpData!.additional! > 0) {
-      return Flexible(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: widget.guestRsvpData!.additional,
-          itemBuilder: (context, index) {
-            return appLayout(desktop(widget.guestRsvpData), tab(widget.guestRsvpData),
-                phone(widget.guestRsvpData, index));
-          },
-        ),
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: widget.guestRsvpData!.additional! + 1,
+        itemBuilder: (context, index) {
+          return appLayout(desktop(widget.guestRsvpData),
+              tab(widget.guestRsvpData), phone(widget.guestRsvpData, index));
+        },
       );
     } else {
       return appLayout(desktop(widget.guestRsvpData), tab(widget.guestRsvpData),
@@ -54,41 +61,167 @@ class _GuestRegistrationState extends State<GuestRegistration> {
   }
 
   Widget phone(GuestRsvpData? data, int index) {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
     return Card(
       child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'First Name',
+              index != 0
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Independent',
+                        ),
+                        Switch(
+                          value: dependant[index],
+                          onChanged: (value) =>
+                              setState(() => dependant[index] = value),
+                        ),
+                        Text(
+                          'Dependent',
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
+              Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: 'First Name',
+                      ),
+                      validator: RequiredValidator(
+                        errorText: 'first name is required',
+                      ),
+                      enabled: index != 0,
+                      onChanged: (val) {
+                        _onUpdate(index, val, 'first_name');
+                      },
+                      onSaved: (val) => _onUpdate(index,
+                          index == 0 ? data!.firstName : val, 'first_name'),
+                      initialValue: index == 0 ? data!.firstName : '',
+                    ),
+                    TextFormField(
+                      enabled: index != 0,
+                      validator: RequiredValidator(
+                        errorText: 'surname is required',
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: 'Surname',
+                      ),
+                      onChanged: (val) {
+                        _onUpdate(index, val, 'surname');
+                      },
+                      onSaved: (val) => _onUpdate(
+                          index, index == 0 ? data!.surname : val, 'surname'),
+                      initialValue: index == 0 ? data!.surname : '',
+                    ),
+                    !dependant[index]
+                        ? emailOrPhone[index]
+                            ? InternationalPhoneNumberInput(
+                                onInputChanged: (PhoneNumber number) {
+                                  _onUpdate(
+                                      index, number.phoneNumber, 'phoneNumber');
+                                },
+                                onInputValidated: (bool value) {
+                                  print(value);
+                                },
+                                selectorConfig: SelectorConfig(
+                                  selectorType: PhoneInputSelectorType.DIALOG,
+                                ),
+                                spaceBetweenSelectorAndTextField: 0,
+                                ignoreBlank: false,
+                                autoValidateMode: AutovalidateMode.disabled,
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                initialValue: PhoneNumber(
+                                  isoCode: 'ZW',
+                                ),
+                                formatInput: false,
+                                keyboardType: TextInputType.numberWithOptions(
+                                  signed: true,
+                                  decimal: true,
+                                ),
+                              )
+                            : TextFormField(
+                                decoration: const InputDecoration(
+                                  hintText: 'Email',
+                                ),
+                                onChanged: (val) {
+                                  _onUpdate(index, val, 'email');
+                                },
+                                validator: MultiValidator([
+                                  RequiredValidator(
+                                    errorText: 'Email is required',
+                                  ),
+                                  EmailValidator(
+                                    errorText: 'Please enter a valid email',
+                                  ),
+                                ]),
+                              )
+                        : SizedBox(),
+                    index == 0 && !emailOrPhone[index]
+                        ? TextFormField(
+                            decoration: const InputDecoration(
+                              hintText: 'Password',
+                            ),
+                            validator: RequiredValidator(
+                              errorText: 'Password is required',
+                            ),
+                          )
+                        : SizedBox(),
+                    Row(
+                      children: [
+                        dependant[index] ?  SizedBox() : Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                'Email',
+                              ),
+                              Switch(
+                                value: emailOrPhone[index],
+                                onChanged: (value) =>
+                                    setState(() => emailOrPhone[index] = value),
+                              ),
+                              Text(
+                                'Phone',
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              if (data!.additional! > 0) {
+                                print('check the other forms');
+                              } else {
+                                print('register just one');
+                              }
+                            } else {
+                              // setState(() => formSubmitted[index] = true);
+                            }
+                          },
+                          child: Text('Save'),
+                        )
+                      ],
+                    )
+                  ],
                 ),
-                enabled: index == 0,
-                onChanged: (val) {
-                  _onUpdate(index, index == 0 ? data!.firstName : val, 'first_name');
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Surname',
-                ),
-                onChanged: (val) {
-                  _onUpdate(index, val, 'surname');
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                ),
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
-              ),
+              )
             ],
           ),
         ),
@@ -118,6 +251,16 @@ class _GuestRegistrationState extends State<GuestRegistration> {
     };
     _values.add(json);
   }
+
+  static List<bool> _dependantList(GuestRsvpData? guestRsvpData) {
+    List<bool> guests = [false];
+    if (guestRsvpData!.additional! > 0) {
+      for (var i = 0; i < guestRsvpData.additional!; i++) {
+        guests.add(false);
+      }
+    }
+    return guests;
+  }
 }
 //todo registration widget
 //todo registration logic => allow for full registration or dependant registration (generate password, require full name, require email or phone
@@ -125,3 +268,5 @@ class _GuestRegistrationState extends State<GuestRegistration> {
 //todo check if additional exist
 //todo if guest is dependent or not
 //todo check if all additional have been registered or marked as dependant
+// print(dependant);
+// print(_values);

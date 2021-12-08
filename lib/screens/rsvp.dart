@@ -344,7 +344,8 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  context.router.push(GuestRegistrationRouter(guestRsvpData: selectedGuest));
+                  //todo add guest
+                  context.router.push(DynamicRegistrationRouter());
                 },
               ),
             ],

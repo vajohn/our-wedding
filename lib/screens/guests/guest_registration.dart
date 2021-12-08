@@ -3,6 +3,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:weddingrsvp/component/components.dart';
 import 'package:weddingrsvp/models/guests.dart';
+import 'package:weddingrsvp/service/auth_service.dart';
 
 class GuestRegistration extends StatefulWidget {
   final GuestRsvpData? guestRsvpData;
@@ -42,13 +43,19 @@ class _GuestRegistrationState extends State<GuestRegistration> {
         shrinkWrap: true,
         itemCount: widget.guestRsvpData!.additional! + 1,
         itemBuilder: (context, index) {
-          return appLayout(desktop(widget.guestRsvpData),
-              tab(widget.guestRsvpData), phone(widget.guestRsvpData, index));
+          return appLayout(
+            desktop(widget.guestRsvpData),
+            phone(widget.guestRsvpData, index),
+            tab(widget.guestRsvpData, index),
+          );
         },
       );
     } else {
-      return appLayout(desktop(widget.guestRsvpData), tab(widget.guestRsvpData),
-          phone(widget.guestRsvpData, 0));
+      return appLayout(
+        desktop(widget.guestRsvpData),
+        phone(widget.guestRsvpData, 0),
+        tab(widget.guestRsvpData, 0),
+      );
     }
   }
 
@@ -56,13 +63,30 @@ class _GuestRegistrationState extends State<GuestRegistration> {
     return Card();
   }
 
-  Widget tab(GuestRsvpData? data) {
-    return Card();
+  Widget tab(GuestRsvpData? data,  int index) {
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextFormField(
+            initialValue: index == 0 ? data!.firstName : '',
+            decoration: const InputDecoration(
+              hintText: 'First Name',
+            ),
+          ),
+          TextFormField(
+            initialValue: index == 0 ? data!.surname : '',
+            decoration: const InputDecoration(
+              hintText: 'Surname',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget phone(GuestRsvpData? data, int index) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
     return Card(
       child: SingleChildScrollView(
         child: Padding(
@@ -141,6 +165,9 @@ class _GuestRegistrationState extends State<GuestRegistration> {
                                 spaceBetweenSelectorAndTextField: 0,
                                 ignoreBlank: false,
                                 autoValidateMode: AutovalidateMode.disabled,
+                                validator: RequiredValidator(
+                                  errorText: 'phone number is required',
+                                ),
                                 textStyle: TextStyle(
                                   color: Colors.white,
                                 ),
@@ -160,63 +187,84 @@ class _GuestRegistrationState extends State<GuestRegistration> {
                                 onChanged: (val) {
                                   _onUpdate(index, val, 'email');
                                 },
-                                validator: MultiValidator([
-                                  RequiredValidator(
-                                    errorText: 'Email is required',
-                                  ),
-                                  EmailValidator(
-                                    errorText: 'Please enter a valid email',
-                                  ),
-                                ]),
+                                validator: MultiValidator(
+                                  [
+                                    RequiredValidator(
+                                      errorText: 'Email is required',
+                                    ),
+                                    EmailValidator(
+                                      errorText: 'Please enter a valid email',
+                                    ),
+                                  ],
+                                ),
                               )
-                        : SizedBox(),
-                    index == 0 && !emailOrPhone[index]
-                        ? TextFormField(
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                            ),
-                            validator: RequiredValidator(
-                              errorText: 'Password is required',
-                            ),
-                          )
                         : SizedBox(),
                     Row(
                       children: [
-                        dependant[index] ?  SizedBox() : Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                'Email',
+                        dependant[index]
+                            ? SizedBox()
+                            : Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Text(
+                                      'Email',
+                                    ),
+                                    Switch(
+                                      value: emailOrPhone[index],
+                                      onChanged: (value) => setState(
+                                          () => emailOrPhone[index] = value),
+                                    ),
+                                    Text(
+                                      'Phone',
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Switch(
-                                value: emailOrPhone[index],
-                                onChanged: (value) =>
-                                    setState(() => emailOrPhone[index] = value),
-                              ),
-                              Text(
-                                'Phone',
-                              ),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              if (data!.additional! > 0) {
-                                print('check the other forms');
-                              } else {
-                                print('register just one');
-                              }
-                            } else {
-                              // setState(() => formSubmitted[index] = true);
-                            }
-                          },
-                          child: Text('Save'),
-                        )
+                        index == 0
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
+                                    if (data!.additional! > 0) {
+                                      for (var i = data.additional!;
+                                          i <= data.additional!;
+                                          i++) {
+                                        List<Map<String, dynamic>> guest =
+                                            _getFieldsById(i);
+
+                                        if (guest.isEmpty) {
+                                          showToast(
+                                              'Update additional guest number $i');
+                                          break;
+                                        }
+                                        ;
+                                        if (!dependant[i] &&
+                                            guest.length <= 2) {
+                                          showToast(
+                                              'Update all fields for additional guest number $i');
+                                          break;
+                                        }
+                                        if (dependant[i] && guest.length <= 1) {
+                                          showToast(
+                                              'Update first name and surname for guest number $i');
+                                          break;
+                                        }
+                                        registerGuests();
+                                      }
+                                    } else {
+                                      registerGuests();
+                                    }
+                                  } else {
+                                    // setState(() => formSubmitted[index] = true);
+                                  }
+                                },
+                                child: Text('Save'),
+                              )
+                            : SizedBox()
                       ],
                     )
                   ],
@@ -227,6 +275,30 @@ class _GuestRegistrationState extends State<GuestRegistration> {
         ),
       ),
     );
+  }
+
+  void registerGuests() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content:
+                Text('Are you sure you want to register with these details ?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  AuthService().autoRegister(_values, context);
+                },
+                child: Text('Submit'),
+              ),
+            ],
+          );
+        });
   }
 
   _onUpdate(int index, String? val, String field) async {
@@ -260,6 +332,12 @@ class _GuestRegistrationState extends State<GuestRegistration> {
       }
     }
     return guests;
+  }
+
+  List<Map<String, dynamic>> _getFieldsById(int id) {
+    List<Map<String, dynamic>> h =
+        _values.where((element) => element['id'] == id).toList();
+    return h;
   }
 }
 //todo registration widget

@@ -44,6 +44,10 @@ class AppRouter extends _i2.RootStackRouter {
           child: _i1.GuestRegistration(
               key: args.key, guestRsvpData: args.guestRsvpData));
     },
+    DynamicRegistrationRouter.name: (routeData) {
+      return _i2.MaterialPageX<dynamic>(
+          routeData: routeData, child: const _i1.DynamicRegistration());
+    },
     DashboardRouter.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
           routeData: routeData, child: const _i1.Dashboard());
@@ -75,7 +79,9 @@ class AppRouter extends _i2.RootStackRouter {
         _i2.RouteConfig(HomeScreen.name, path: '/'),
         _i2.RouteConfig(LoginRoute.name, path: 'login'),
         _i2.RouteConfig(SplitRsvp.name, path: '/split-rsvp'),
-        _i2.RouteConfig(GuestRegistrationRouter.name, path: 'registration'),
+        _i2.RouteConfig(GuestRegistrationRouter.name,
+            path: 'guest-registration'),
+        _i2.RouteConfig(DynamicRegistrationRouter.name, path: 'registration'),
         _i2.RouteConfig(DashboardRouter.name, path: 'dashboard', children: [
           _i2.RouteConfig('#redirect',
               path: '',
@@ -132,7 +138,7 @@ class GuestRegistrationRouter
   GuestRegistrationRouter(
       {_i3.Key? key, required _i5.GuestRsvpData? guestRsvpData})
       : super(name,
-            path: 'registration',
+            path: 'guest-registration',
             args: GuestRegistrationRouterArgs(
                 key: key, guestRsvpData: guestRsvpData));
 
@@ -150,6 +156,13 @@ class GuestRegistrationRouterArgs {
   String toString() {
     return 'GuestRegistrationRouterArgs{key: $key, guestRsvpData: $guestRsvpData}';
   }
+}
+
+/// generated route for [_i1.DynamicRegistration]
+class DynamicRegistrationRouter extends _i2.PageRouteInfo<void> {
+  const DynamicRegistrationRouter() : super(name, path: 'registration');
+
+  static const String name = 'DynamicRegistrationRouter';
 }
 
 /// generated route for [_i1.Dashboard]

@@ -11,6 +11,11 @@ import 'package:weddingrsvp/screens/screens.dart';
     AutoRoute(
       page: GuestRegistration,
       name: 'GuestRegistrationRouter',
+      path: 'guest-registration',
+    ),
+    AutoRoute(
+      page: DynamicRegistration,
+      name: 'DynamicRegistrationRouter',
       path: 'registration',
     ),
     AutoRoute(

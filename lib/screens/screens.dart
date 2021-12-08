@@ -8,3 +8,4 @@ export 'guests/bride_guests.dart';
 export 'guests/groom_guests.dart';
 export 'dashboard/admin_dashboard.dart';
 export 'guests/guest_registration.dart';
+export 'guests/dynamic_registration.dart';

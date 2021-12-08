@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -161,9 +163,7 @@ class AuthService {
       users.doc(user?.uid).set({
         'roles': ['guest']
       });
-    } else{
-
-    }
+    } else {}
   }
 
   Color _toastColor(String messageType) {
@@ -179,17 +179,28 @@ class AuthService {
     }
   }
 
-  phoneLogin(String phoneNumber, String text, BuildContext context) {
-
-  }
+  phoneLogin(String phoneNumber, String text, BuildContext context) {}
 
   Future<UserData> getUserData(String uid) async {
+    DocumentSnapshot<Map<String, dynamic>?> documentSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-    DocumentSnapshot<Map<String, dynamic>?> documentSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+    return UserData.fromJson(documentSnapshot.data());
+  }
 
-     return UserData.fromJson(documentSnapshot.data());
+  void autoRegister(List<Map<String, dynamic>> guests, BuildContext context) {
+    bool loading = true;
+    showDialog(
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: loading ? SizedBox(height: 200, child: CircularProgressIndicator(),) : Text('RSVP complete, please check your email or sms inbox for your credentials'),
+          );
+        },
+        context: context);
+
+    // loading = false;
+    //todo register from largest to smallest index
+    //todo random 4 digits on name for password
   }
 }

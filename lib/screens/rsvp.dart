@@ -2,7 +2,9 @@ import 'package:auto_route/src/router/auto_router_x.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/src/provider.dart';
 import 'package:weddingrsvp/models/guests.dart';
+import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:weddingrsvp/service/data.dart';
 import 'package:weddingrsvp/util/router.gr.dart';
 
@@ -345,6 +347,7 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
                 onTap: () {
                   Navigator.pop(context);
                   //todo add guest
+                  context.read<CurrentUserData>().updateGuests(selectedGuest);
                   context.router.push(DynamicRegistrationRouter());
                 },
               ),

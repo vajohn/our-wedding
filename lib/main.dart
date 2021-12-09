@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
+import 'package:weddingrsvp/providers/loading_form_bloc.dart';
 import 'package:weddingrsvp/util/router.dart';
 import 'package:weddingrsvp/util/router.gr.dart';
 
@@ -11,6 +13,7 @@ Future<void> main() async {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CurrentUserData()),
+        BlocProvider(create: (_) => ListFieldFormBloc(null)),
       ],
       child: MyApp()
   ));

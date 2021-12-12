@@ -17,6 +17,12 @@ class GuestRsvpListData {
     data['guests'] = this.guests!.map((v) => v.toJson()).toList();
     return data;
   }
+
+  GuestRsvpListData.plain(List<GuestRsvpData>? value) {
+    if (value != null) {
+      guests = value;
+    }
+  }
 }
 
 class GuestRsvpData {
@@ -47,6 +53,16 @@ class GuestRsvpData {
     guardian = json['guardian'];
   }
 
+  GuestRsvpData.fromJsonPlusId(Map<String, dynamic> json, String? id) {
+    firstName = json['firstName'];
+    surname = json['surname'];
+    uuid = id;
+    side = json['side'];
+    additional = json['additional'];
+    dependant = json['dependant'];
+    guardian = json['guardian'];
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['firstName'] = this.firstName;
@@ -69,6 +85,11 @@ class GuestRsvpData {
 
   String? fullName() {
     return this.firstName! + ' ' + this.surname!;
+  }
+
+  @override
+  String toString() {
+    return 'GuestRsvpData{firstName: $firstName, surname: $surname, uuid: $uuid, side: $side, additional: $additional, dependant: $dependant, guardian: $guardian}';
   }
 }
 
@@ -107,8 +128,7 @@ class GuestReservedData {
     data['side'] = this.side;
     data['uuid'] = this.uuid;
     if (this.additional != null) {
-      data['additional'] =
-          this.additional!.map((v) => v.toJson()).toList();
+      data['additional'] = this.additional!.map((v) => v.toJson()).toList();
     }
     return data;
   }

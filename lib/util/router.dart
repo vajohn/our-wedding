@@ -8,11 +8,6 @@ import 'package:weddingrsvp/screens/screens.dart';
     AutoRoute(path: 'login', name: 'LoginRoute', page: LoginScreen),
     AutoRoute(page: SplitRsvp),
     AutoRoute(
-      page: GuestRegistration,
-      name: 'GuestRegistrationRouter',
-      path: 'guest-registration',
-    ),
-    AutoRoute(
       page: DynamicRegistration,
       name: 'DynamicRegistrationRouter',
       path: 'registration',

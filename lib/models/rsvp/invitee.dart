@@ -2,14 +2,20 @@ class Invitee {
   String? initialGuest;
   bool? initialGuestContactType;
   String? initialContact;
-
+  List<AdditionalGuest>? additionalGuests;
   Invitee(
-      {this.initialGuest, this.initialGuestContactType, this.initialContact});
+      {this.initialGuest, this.initialGuestContactType, this.initialContact, this.additionalGuests});
 
   Invitee.fromJson(Map<String, dynamic> json) {
     initialGuest = json['initialGuest'];
     initialGuestContactType = json['initialGuestContactType'];
     initialContact = json['initialContact'];
+    if (json['additionalGuests'] != null) {
+      additionalGuests = <AdditionalGuest>[];
+      json['additionalGuests'].forEach((v) {
+        additionalGuests!.add(AdditionalGuest.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -17,6 +23,9 @@ class Invitee {
     data['initialGuest'] = this.initialGuest;
     data['initialGuestContactType'] = this.initialGuestContactType;
     data['initialContact'] = this.initialContact;
+    if (this.additionalGuests != null) {
+      data['additionalGuests'] = this.additionalGuests!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 
@@ -25,6 +34,7 @@ class Invitee {
   initialGuest: $initialGuest,
   initialGuestContactType: ${initialGuestContactType! ? 'phone' : 'email'},
   initialContact: $initialContact,
+  additionalGuests: $additionalGuests
 }''';
 }
 
@@ -54,10 +64,11 @@ class AdditionalGuest {
   }
 
   @override
-  String toString() => '''Member {
+  String toString() => '''AdditionalGuest {
   firstName: $firstName,
   lastName: $lastName,
   contact: $contact,
-  contactType: ${contactType! ? 'phone' : 'email'},
+  contactType:  ${contactType! ? 'phone' : 'email'},
   }''';
+  // true => 'phone' : false=>'email'
 }

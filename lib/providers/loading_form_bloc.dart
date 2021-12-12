@@ -6,13 +6,16 @@ import 'package:weddingrsvp/models/rsvp/invitee.dart';
 
 class ListFieldFormBloc extends FormBloc<String, String> {
   final initialGuest = TextFieldBloc(name: 'initialGuest');
-  final initialContact = TextFieldBloc(name: 'initialContact', validators: [FieldBlocValidators.required]);
+  final initialContact = TextFieldBloc(
+      name: 'initialContact',
+      validators: [FieldBlocValidators.required, FieldBlocValidators.email]);
   final initialGuestContactType =
       BooleanFieldBloc(name: 'initialGuestContactType');
 
   final additionalGuests =
       ListFieldBloc<MemberFieldBloc, dynamic>(name: 'additionalGuests');
   final GuestRsvpData? guest;
+  int? _additionalCount;
 
   ListFieldFormBloc(this.guest) : super(isLoading: true) {
     addFieldBlocs(
@@ -23,8 +26,31 @@ class ListFieldFormBloc extends FormBloc<String, String> {
         additionalGuests,
       ],
     );
+    _additionalCount = this.guest?.additional;
+    initialGuestContactType.onValueChanges(onData:
+        (BooleanFieldBlocState<dynamic> previous,
+            BooleanFieldBlocState<dynamic> current) async* {
+      if (current.value) {
+        this.initialContact.updateValidators([FieldBlocValidators.required]);
+        this.initialContact.updateAsyncValidators([_checkAreaCode]);
+      } else {
+        this.initialContact.updateAsyncValidators([]);
+        this.initialContact.updateValidators(
+            [FieldBlocValidators.required, FieldBlocValidators.email]);
+      }
+    });
+  }
 
-
+  Future<String?> _checkAreaCode(String? phoneNumber) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    String pattern = r'(^(?:[+0])?[0-9]{10,12}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (phoneNumber?.length == 0) {
+      return 'Please enter mobile number';
+    } else if (!regExp.hasMatch(phoneNumber!)) {
+      return 'Please enter valid mobile number';
+    }
+    return null;
   }
 
   @override
@@ -56,46 +82,65 @@ class ListFieldFormBloc extends FormBloc<String, String> {
       ),
       contact: TextFieldBloc(
         name: 'contact',
-        validators: [FieldBlocValidators.required],
       ),
       contactType: BooleanFieldBloc(
         name: 'contactType',
-        validators: [FieldBlocValidators.required],
       ),
       dependant: BooleanFieldBloc(
         name: 'dependant',
-        validators: [FieldBlocValidators.required],
       ),
     ));
   }
 
   void removeMember(int index) {
     additionalGuests.removeFieldBlocAt(index);
+    _additionalCount = _additionalCount! - 1;
   }
 
+  void addToCount(int val){
+    _additionalCount = _additionalCount! + val;
+  }
+  int? get actualCount => _additionalCount;
   @override
   void onSubmitting() async {
     // Without serialization
-    final initialGuestData = Invitee(
-        initialGuest: initialGuest.value,
-        initialContact: initialContact.value,
-        initialGuestContactType: initialGuestContactType.value);
 
-    print('initialGuestData');
-    print(initialGuestData);
+    // await Future.delayed(Duration(seconds: 5));
+    // final initialGuestData = Invitee(
+    //   initialGuest: initialGuest.value,
+    //   initialContact: initialContact.value,
+    //   initialGuestContactType: initialGuestContactType.value,
+    //   additionalGuests:
+    //       additionalGuests.value.map<AdditionalGuest>((memberField) {
+    //     return AdditionalGuest(
+    //         firstName: memberField.firstName.value,
+    //         lastName: memberField.lastName.value,
+    //         contact: memberField.contact.value,
+    //         contactType: memberField.contactType.value);
+    //   }).toList(),
+    // );
+    //
+    // print('initialGuestData');
+    // print(initialGuestData);
 
     // With Serialization
     final initialGuestDataV2 = Invitee.fromJson(state.toJson());
 
-    ('initialGuestDataV2');
-    print(initialGuestDataV2);
-
-    emitSuccess(
-      canSubmitAgain: true,
-      successResponse: JsonEncoder.withIndent('    ').convert(
-        state.toJson(),
-      ),
-    );
+    // print('initialGuestDataV2');
+    // print(initialGuestDataV2);
+    print(
+        '${this.guest?.additional} >>> ${initialGuestDataV2.additionalGuests?.length}');
+    if (this.guest?.additional != actualCount) {
+      print('issues');
+      emitDeleteFailed(failureResponse: 'Are you sure');
+    } else {
+      emitSuccess(
+        canSubmitAgain: false,
+        successResponse: JsonEncoder.withIndent('    ').convert(
+          state.toJson(),
+        ),
+      );
+    }
   }
 }
 
@@ -107,11 +152,8 @@ class MemberFieldBloc extends GroupFieldBloc {
     validators: [FieldBlocValidators.required],
   );
   TextFieldBloc contact = TextFieldBloc();
-  BooleanFieldBloc contactType = BooleanFieldBloc(
-
-  );
-  BooleanFieldBloc dependant = BooleanFieldBloc(
-  );
+  BooleanFieldBloc contactType = BooleanFieldBloc();
+  BooleanFieldBloc dependant = BooleanFieldBloc();
 
   MemberFieldBloc({
     required this.firstName,
@@ -120,20 +162,47 @@ class MemberFieldBloc extends GroupFieldBloc {
     required this.contactType,
     required this.dependant,
     String? name,
-  }) : super(
-            name: name,
-            fieldBlocs: [firstName, lastName, contact, contactType, dependant]){
+  }) : super(name: name, fieldBlocs: [
+          firstName,
+          lastName,
+          contact,
+          contactType,
+          dependant
+        ]) {
     dependant.onValueChanges(
       onData: (previous, current) async* {
-
         if (current.value) {
-          print('show contact');
-
+          this.contact.addValidators(
+              [FieldBlocValidators.required, FieldBlocValidators.email]);
         } else {
-          print('show remove');
-
+          this.contact.updateValidators([]);
+          this.contact.clear();
         }
       },
     );
+
+    contactType.onValueChanges(onData: (BooleanFieldBlocState<dynamic> previous,
+        BooleanFieldBlocState<dynamic> current) async* {
+      if (current.value) {
+        this.contact.updateValidators([FieldBlocValidators.required]);
+        this.contact.updateAsyncValidators([_checkAreaCode]);
+      } else {
+        this.contact.updateAsyncValidators([]);
+        this.contact.updateValidators(
+            [FieldBlocValidators.required, FieldBlocValidators.email]);
+      }
+    });
+  }
+
+  Future<String?> _checkAreaCode(String? phoneNumber) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    String pattern = r'(^(?:[+0])?[0-9]{10,12}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (phoneNumber?.length == 0) {
+      return 'Please enter mobile number';
+    } else if (!regExp.hasMatch(phoneNumber!)) {
+      return 'Please enter valid mobile number';
+    }
+    return null;
   }
 }

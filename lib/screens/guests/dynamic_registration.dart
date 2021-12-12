@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:weddingrsvp/component/background.dart';
+import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:weddingrsvp/providers/loading_form_bloc.dart';
 
@@ -12,8 +14,9 @@ class DynamicRegistration extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: BackgroundCore(
+          child: SafeArea(
         child: ListFieldsForm(),
-      ),
+      )),
     );
   }
 }
@@ -24,23 +27,18 @@ class ListFieldsForm extends StatefulWidget {
 }
 
 class _ListFieldsFormState extends State<ListFieldsForm> {
-  bool initialContact = false;
-
   @override
   Widget build(BuildContext context) {
+    GuestRsvpData? currentReg = context.read<CurrentUserData>().guestsData;
     return BlocProvider(
       create: (context) =>
-          ListFieldFormBloc(context.read<CurrentUserData>().guestsData),
+          ListFieldFormBloc(currentReg),
       child: Builder(
         builder: (context) {
           final formBloc = context.watch<ListFieldFormBloc>();
           return Theme(
             data: Theme.of(context).copyWith(
-              inputDecorationTheme: InputDecorationTheme(
-                border: OutlineInputBorder(
-                    // borderRadius: BorderRadius.circular(20),
-                    ),
-              ),
+              inputDecorationTheme: InputDecorationTheme(),
             ),
             child: FormBlocListener<ListFieldFormBloc, String, String>(
               onSubmitting: (context, state) {
@@ -67,6 +65,38 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
 
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse!)));
+              },
+              onDeleteFailed: (context, state) {
+                LoadingDialog.hide(context);
+                int difference = currentReg!.additional! - formBloc.actualCount!;
+                Widget cancelButton = TextButton(
+                  child: Text("Cancel"),
+                  onPressed:  () => Navigator.of(context).pop(),
+                );
+                Widget continueButton = TextButton(
+                  child: Text("Continue"),
+                  onPressed:  () {
+                    formBloc.addToCount(difference);
+                    Navigator.of(context).pop();
+                  },
+                );
+                // set up the AlertDialog
+                AlertDialog alert = AlertDialog(
+                  title: Text("Missing guests !"),
+                  content: Text("Would you like to continue to RSVP with missing $difference guest${difference > 1 ? 's':''} ?"),
+                  actions: [
+                    cancelButton,
+                    continueButton,
+                  ],
+                );
+                // show the dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
+
               },
               child: SingleChildScrollView(
                 physics: ClampingScrollPhysics(),
@@ -125,10 +155,23 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                         return Container();
                       },
                     ),
-                    ElevatedButton(
-                      onPressed: formBloc.submit,
-                      child: Text('RSVP'),
-                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        formBloc.actualCount != currentReg!.additional ? ElevatedButton(
+                          onPressed: (){
+                            formBloc.addMember();
+                            formBloc.addToCount(1);
+                          },
+                          child: Text('Add Guest'),
+                        ) : Container(),
+                        ElevatedButton(
+                          onPressed: formBloc.submit,
+                          child: Text('RSVP'),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -137,6 +180,10 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
         },
       ),
     );
+  }
+
+  void _confirmAdditionalDelete(BuildContext context) {
+    // set up the buttons
   }
 }
 
@@ -177,7 +224,6 @@ class _MemberCardState extends State<MemberCard> {
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
-
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: widget.onRemoveMember,
@@ -205,7 +251,9 @@ class _MemberCardState extends State<MemberCard> {
                     booleanFieldBloc: widget.memberField.contactType,
                     body: const Text('Email or Phone'),
                   )
-                : SizedBox(height: 1,),
+                : SizedBox(
+                    height: 1,
+                  ),
             widget.memberField.dependant.value
                 ? TextFieldBlocBuilder(
                     textFieldBloc: widget.memberField.contact,
@@ -218,7 +266,9 @@ class _MemberCardState extends State<MemberCard> {
                           : Icons.email),
                     ),
                   )
-                : SizedBox(height: 1,),
+                : SizedBox(
+                    height: 1,
+                  ),
           ],
         ),
       ),

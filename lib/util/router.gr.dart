@@ -10,8 +10,9 @@
 
 import 'package:auto_route/auto_route.dart' as _i2;
 import 'package:flutter/material.dart' as _i3;
+import 'package:flutter/widgets.dart' as _i5;
 
-import '../models/guests.dart' as _i5;
+import '../models/guests.dart' as _i6;
 import '../screens/screens.dart' as _i1;
 import 'router.dart' as _i4;
 
@@ -136,7 +137,7 @@ class SplitRsvp extends _i2.PageRouteInfo<void> {
 class GuestRegistrationRouter
     extends _i2.PageRouteInfo<GuestRegistrationRouterArgs> {
   GuestRegistrationRouter(
-      {_i3.Key? key, required _i5.GuestRsvpData? guestRsvpData})
+      {_i5.Key? key, required _i6.GuestRsvpData? guestRsvpData})
       : super(name,
             path: 'guest-registration',
             args: GuestRegistrationRouterArgs(
@@ -148,9 +149,9 @@ class GuestRegistrationRouter
 class GuestRegistrationRouterArgs {
   const GuestRegistrationRouterArgs({this.key, required this.guestRsvpData});
 
-  final _i3.Key? key;
+  final _i5.Key? key;
 
-  final _i5.GuestRsvpData? guestRsvpData;
+  final _i6.GuestRsvpData? guestRsvpData;
 
   @override
   String toString() {

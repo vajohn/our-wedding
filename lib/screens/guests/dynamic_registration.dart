@@ -6,6 +6,7 @@ import 'package:weddingrsvp/component/background.dart';
 import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:weddingrsvp/providers/registration_bloc.dart';
+import 'package:weddingrsvp/service/data.dart';
 
 class DynamicRegistration extends StatelessWidget {
   const DynamicRegistration({Key? key}) : super(key: key);
@@ -46,7 +47,7 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
               },
               onSuccess: (context, state) {
                 Loader.hide();
-
+                DataService().removeFromGuestList(currentReg?.uuid);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: SingleChildScrollView(

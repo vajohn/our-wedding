@@ -232,4 +232,6 @@ class AuthService {
 
     return UserData.fromJson(documentSnapshot.data());
   }
+
+
 }

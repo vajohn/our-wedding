@@ -18,18 +18,17 @@ class DataService {
         .collection('guests')
         .get()
         .then((value) => value.docs.forEach((element) {
-
-      stuff.add(GuestRsvpData.fromJsonPlusId(element.data(), element.id));
+              stuff.add(
+                  GuestRsvpData.fromJsonPlusId(element.data(), element.id));
             }));
     return await GuestRsvpListData.plain(stuff);
   }
 
   Future<List<GuestRsvpData>> mockGuestListBySide(bool brideSide) async {
     try {
-      return await this.guestList().then((value) =>
-          value.guests!
-              .where((guest) => guest.side == (brideSide ? 'bride' : 'groom'))
-              .toList());
+      return await this.guestList().then((value) => value.guests!
+          .where((guest) => guest.side == (brideSide ? 'bride' : 'groom'))
+          .toList());
     } catch (e) {
       print('Error >>>>>>>>>>>>> $e');
       return [];
@@ -48,6 +47,22 @@ class DataService {
     } catch (e) {
       print('Error >>>>>>>>>>>>> $e');
       return [];
+    }
+  }
+
+  void removeFromGuestList(String? uuid) async {
+    try {
+      await FirebaseFirestore.instance.collection('guests').doc(uuid).delete();
+    } catch (e) {
+      print('Error >>>>>>>>>>>>> $e');
+    }
+  }
+
+  void addToGuestList(GuestRsvpData? guest) async {
+    try {
+      await FirebaseFirestore.instance.collection('guests').add(guest!.toJson());
+    } catch (e) {
+      print('Error >>>>>>>>>>>>> $e');
     }
   }
 }

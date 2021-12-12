@@ -146,8 +146,9 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                         ],
                       ),
                     )),
-                    BlocBuilder<ListFieldBloc<MemberFieldBloc, dynamic>,
-                        ListFieldBlocState<MemberFieldBloc, dynamic>>(
+                    BlocBuilder<
+                        ListFieldBloc<AdditionalGuestFieldBloc, dynamic>,
+                        ListFieldBlocState<AdditionalGuestFieldBloc, dynamic>>(
                       bloc: formBloc.additionalGuests,
                       builder: (context, state) {
                         if (state.fieldBlocs.isNotEmpty) {
@@ -199,7 +200,7 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
 
 class MemberCard extends StatefulWidget {
   final int memberIndex;
-  final MemberFieldBloc memberField;
+  final AdditionalGuestFieldBloc memberField;
 
   final VoidCallback onRemoveMember;
 
@@ -274,6 +275,21 @@ class _MemberCardState extends State<MemberCard> {
                       prefixIcon: Icon(widget.memberField.contactType.value
                           ? Icons.phone
                           : Icons.email),
+                    ),
+                  )
+                : SizedBox(
+                    height: 1,
+                  ),
+            widget.memberField.dependant.value
+                ? TextFieldBlocBuilder(
+                    textFieldBloc: widget.memberField.password,
+                    suffixButton: SuffixButton.obscureText,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(
+                        FontAwesomeIcons.userLock,
+                      ),
                     ),
                   )
                 : SizedBox(

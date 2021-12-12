@@ -5,7 +5,7 @@ import 'package:weddingrsvp/models/rsvp/invitee.dart';
 
 class ListFieldFormBloc extends FormBloc<String, String> {
   final initialGuest = TextFieldBloc(name: 'initialGuest');
-  final initialGuestPassword = TextFieldBloc(name: 'initialGuestPassword');
+  final initialGuestPassword = TextFieldBloc(name: 'initialGuestPassword', validators: [FieldBlocValidators.required, FieldBlocValidators.passwordMin6Chars]);
   final initialContact = TextFieldBloc(
       name: 'initialContact',
       validators: [FieldBlocValidators.required, FieldBlocValidators.email]);
@@ -13,7 +13,7 @@ class ListFieldFormBloc extends FormBloc<String, String> {
       BooleanFieldBloc(name: 'initialGuestContactType');
 
   final additionalGuests =
-      ListFieldBloc<MemberFieldBloc, dynamic>(name: 'additionalGuests');
+      ListFieldBloc<AdditionalGuestFieldBloc, dynamic>(name: 'additionalGuests');
   final GuestRsvpData? guest;
   int? _additionalCount;
   bool? _visiblePassword = false;
@@ -72,7 +72,7 @@ class ListFieldFormBloc extends FormBloc<String, String> {
   }
 
   void addMember() {
-    additionalGuests.addFieldBloc(MemberFieldBloc(
+    additionalGuests.addFieldBloc(AdditionalGuestFieldBloc(
       name: 'additionalGuest',
       firstName: TextFieldBloc(
         name: 'firstName',
@@ -84,6 +84,9 @@ class ListFieldFormBloc extends FormBloc<String, String> {
       ),
       contact: TextFieldBloc(
         name: 'contact',
+      ),
+      password: TextFieldBloc(
+        name: 'password',
       ),
       contactType: BooleanFieldBloc(
         name: 'contactType',
@@ -134,7 +137,7 @@ class ListFieldFormBloc extends FormBloc<String, String> {
   // }
 }
 
-class MemberFieldBloc extends GroupFieldBloc {
+class AdditionalGuestFieldBloc extends GroupFieldBloc {
   TextFieldBloc firstName = TextFieldBloc(
     validators: [FieldBlocValidators.required],
   );
@@ -142,12 +145,14 @@ class MemberFieldBloc extends GroupFieldBloc {
     validators: [FieldBlocValidators.required],
   );
   TextFieldBloc contact = TextFieldBloc();
+  TextFieldBloc password = TextFieldBloc();
   BooleanFieldBloc contactType = BooleanFieldBloc();
   BooleanFieldBloc dependant = BooleanFieldBloc();
 
-  MemberFieldBloc({
+  AdditionalGuestFieldBloc({
     required this.firstName,
     required this.lastName,
+    required this.password,
     required this.contact,
     required this.contactType,
     required this.dependant,
@@ -155,6 +160,7 @@ class MemberFieldBloc extends GroupFieldBloc {
   }) : super(name: name, fieldBlocs: [
           firstName,
           lastName,
+          password,
           contact,
           contactType,
           dependant
@@ -162,11 +168,14 @@ class MemberFieldBloc extends GroupFieldBloc {
     dependant.onValueChanges(
       onData: (previous, current) async* {
         if (current.value) {
-          this.contact.addValidators(
+          this.contact.updateValidators(
               [FieldBlocValidators.required, FieldBlocValidators.email]);
+          this.password.updateValidators([FieldBlocValidators.required, FieldBlocValidators.passwordMin6Chars]);
         } else {
           this.contact.updateValidators([]);
+          this.password.updateValidators([]);
           this.contact.clear();
+          this.password.clear();
         }
       },
     );

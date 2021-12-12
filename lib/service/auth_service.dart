@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:provider/src/provider.dart';
+import 'package:weddingrsvp/models/rsvp/invitee.dart';
 import 'package:weddingrsvp/models/user_data.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:weddingrsvp/util/router.gr.dart';
@@ -16,8 +15,9 @@ class AuthService {
   Future<void> emailRegistration(
       String email, String password, BuildContext context) async {
     try {
-      await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      updateUserData(userCredential.user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         _sendToast('The password provided is too weak.', 'info', context);
@@ -166,6 +166,24 @@ class AuthService {
     } else {}
   }
 
+  Future<void> addDependantGuest(
+      User? user, AdditionalGuest additionalGuest) async {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    DocumentSnapshot document = await users.doc(user?.uid).get();
+
+    if (document.exists) {
+      users.doc(user?.uid).update({
+        'dependants': [
+          {
+            'firstName': additionalGuest.firstName,
+            'surname': additionalGuest.lastName
+          }
+        ]
+      });
+    }
+  }
+
   Color _toastColor(String messageType) {
     switch (messageType) {
       case 'success':
@@ -194,7 +212,13 @@ class AuthService {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: loading ? SizedBox(height: 200, child: CircularProgressIndicator(),) : Text('RSVP complete, please check your email or sms inbox for your credentials'),
+            content: loading
+                ? SizedBox(
+                    height: 200,
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(
+                    'RSVP complete, please check your email or sms inbox for your credentials'),
           );
         },
         context: context);

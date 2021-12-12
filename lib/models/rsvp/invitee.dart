@@ -1,13 +1,15 @@
 class Invitee {
   String? initialGuest;
+  String? initialGuestPassword;
   bool? initialGuestContactType;
   String? initialContact;
   List<AdditionalGuest>? additionalGuests;
   Invitee(
-      {this.initialGuest, this.initialGuestContactType, this.initialContact, this.additionalGuests});
+      {this.initialGuest, this.initialGuestPassword, this.initialGuestContactType, this.initialContact, this.additionalGuests});
 
   Invitee.fromJson(Map<String, dynamic> json) {
     initialGuest = json['initialGuest'];
+    initialGuestPassword = json['initialGuestPassword'];
     initialGuestContactType = json['initialGuestContactType'];
     initialContact = json['initialContact'];
     if (json['additionalGuests'] != null) {
@@ -21,6 +23,7 @@ class Invitee {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['initialGuest'] = this.initialGuest;
+    data['initialGuestPassword'] = this.initialGuestPassword;
     data['initialGuestContactType'] = this.initialGuestContactType;
     data['initialContact'] = this.initialContact;
     if (this.additionalGuests != null) {
@@ -32,6 +35,7 @@ class Invitee {
   @override
   String toString() => '''InitialGuest {
   initialGuest: $initialGuest,
+  initialGuestPassword: $initialGuestPassword,
   initialGuestContactType: ${initialGuestContactType! ? 'phone' : 'email'},
   initialContact: $initialContact,
   additionalGuests: $additionalGuests
@@ -70,5 +74,4 @@ class AdditionalGuest {
   contact: $contact,
   contactType:  ${contactType! ? 'phone' : 'email'},
   }''';
-  // true => 'phone' : false=>'email'
 }

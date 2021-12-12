@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:weddingrsvp/component/background.dart';
 import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
@@ -31,8 +31,7 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
   Widget build(BuildContext context) {
     GuestRsvpData? currentReg = context.read<CurrentUserData>().guestsData;
     return BlocProvider(
-      create: (context) =>
-          ListFieldFormBloc(currentReg),
+      create: (context) => ListFieldFormBloc(currentReg),
       child: Builder(
         builder: (context) {
           final formBloc = context.watch<ListFieldFormBloc>();
@@ -68,14 +67,15 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
               },
               onDeleteFailed: (context, state) {
                 LoadingDialog.hide(context);
-                int difference = currentReg!.additional! - formBloc.actualCount!;
+                int difference =
+                    currentReg!.additional! - formBloc.actualCount!;
                 Widget cancelButton = TextButton(
                   child: Text("Cancel"),
-                  onPressed:  () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).pop(),
                 );
                 Widget continueButton = TextButton(
                   child: Text("Continue"),
-                  onPressed:  () {
+                  onPressed: () {
                     formBloc.addToCount(difference);
                     Navigator.of(context).pop();
                   },
@@ -83,7 +83,8 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                 // set up the AlertDialog
                 AlertDialog alert = AlertDialog(
                   title: Text("Missing guests !"),
-                  content: Text("Would you like to continue to RSVP with missing $difference guest${difference > 1 ? 's':''} ?"),
+                  content: Text(
+                      "Would you like to continue to RSVP with missing $difference guest${difference > 1 ? 's' : ''} ?"),
                   actions: [
                     cancelButton,
                     continueButton,
@@ -96,7 +97,6 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                     return alert;
                   },
                 );
-
               },
               child: SingleChildScrollView(
                 physics: ClampingScrollPhysics(),
@@ -111,7 +111,7 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                             textFieldBloc: formBloc.initialGuest,
                             isEnabled: false,
                             decoration: InputDecoration(
-                              labelText: 'Initial Guest Name',
+                              labelText: 'Guest name',
                               prefixIcon: Icon(Icons.person),
                             ),
                           ),
@@ -126,9 +126,21 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                                   ? 'Phone'
                                   : 'Email',
                               prefixIcon: Icon(
-                                  formBloc.initialGuestContactType.value
-                                      ? Icons.phone
-                                      : Icons.email),
+                                formBloc.initialGuestContactType.value
+                                    ? Icons.phone
+                                    : Icons.email,
+                              ),
+                            ),
+                          ),
+                          TextFieldBlocBuilder(
+                            textFieldBloc: formBloc.initialGuestPassword,
+                            suffixButton: SuffixButton.obscureText,
+                            keyboardType: TextInputType.visiblePassword,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              prefixIcon: Icon(
+                                FontAwesomeIcons.userLock,
+                              ),
                             ),
                           ),
                         ],
@@ -159,13 +171,15 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        formBloc.actualCount != currentReg!.additional ? ElevatedButton(
-                          onPressed: (){
-                            formBloc.addMember();
-                            formBloc.addToCount(1);
-                          },
-                          child: Text('Add Guest'),
-                        ) : Container(),
+                        formBloc.actualCount != currentReg!.additional
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  formBloc.addMember();
+                                  formBloc.addToCount(1);
+                                },
+                                child: Text('Add Guest'),
+                              )
+                            : Container(),
                         ElevatedButton(
                           onPressed: formBloc.submit,
                           child: Text('RSVP'),
@@ -180,10 +194,6 @@ class _ListFieldsFormState extends State<ListFieldsForm> {
         },
       ),
     );
-  }
-
-  void _confirmAdditionalDelete(BuildContext context) {
-    // set up the buttons
   }
 }
 

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:weddingrsvp/models/guests.dart';
@@ -6,6 +5,7 @@ import 'package:weddingrsvp/models/rsvp/invitee.dart';
 
 class ListFieldFormBloc extends FormBloc<String, String> {
   final initialGuest = TextFieldBloc(name: 'initialGuest');
+  final initialGuestPassword = TextFieldBloc(name: 'initialGuestPassword');
   final initialContact = TextFieldBloc(
       name: 'initialContact',
       validators: [FieldBlocValidators.required, FieldBlocValidators.email]);
@@ -16,11 +16,13 @@ class ListFieldFormBloc extends FormBloc<String, String> {
       ListFieldBloc<MemberFieldBloc, dynamic>(name: 'additionalGuests');
   final GuestRsvpData? guest;
   int? _additionalCount;
+  bool? _visiblePassword = false;
 
   ListFieldFormBloc(this.guest) : super(isLoading: true) {
     addFieldBlocs(
       fieldBlocs: [
         initialGuest,
+        initialGuestPassword,
         initialContact,
         initialGuestContactType,
         additionalGuests,
@@ -100,48 +102,36 @@ class ListFieldFormBloc extends FormBloc<String, String> {
   void addToCount(int val){
     _additionalCount = _additionalCount! + val;
   }
+
+  void viewPassword(){
+    _visiblePassword = !_visiblePassword!;
+    emitLoaded();
+  }
+
   int? get actualCount => _additionalCount;
+  bool? get passwordVisibility => _visiblePassword;
+
   @override
   void onSubmitting() async {
-    // Without serialization
-
-    // await Future.delayed(Duration(seconds: 5));
-    // final initialGuestData = Invitee(
-    //   initialGuest: initialGuest.value,
-    //   initialContact: initialContact.value,
-    //   initialGuestContactType: initialGuestContactType.value,
-    //   additionalGuests:
-    //       additionalGuests.value.map<AdditionalGuest>((memberField) {
-    //     return AdditionalGuest(
-    //         firstName: memberField.firstName.value,
-    //         lastName: memberField.lastName.value,
-    //         contact: memberField.contact.value,
-    //         contactType: memberField.contactType.value);
-    //   }).toList(),
-    // );
-    //
-    // print('initialGuestData');
-    // print(initialGuestData);
 
     // With Serialization
     final initialGuestDataV2 = Invitee.fromJson(state.toJson());
-
-    // print('initialGuestDataV2');
-    // print(initialGuestDataV2);
-    print(
-        '${this.guest?.additional} >>> ${initialGuestDataV2.additionalGuests?.length}');
     if (this.guest?.additional != actualCount) {
-      print('issues');
       emitDeleteFailed(failureResponse: 'Are you sure');
     } else {
-      emitSuccess(
-        canSubmitAgain: false,
-        successResponse: JsonEncoder.withIndent('    ').convert(
-          state.toJson(),
-        ),
-      );
+      // _initRegisterGuest(initialGuestDataV2);
+      // emitSuccess(
+      //   canSubmitAgain: false,
+      //   successResponse: JsonEncoder.withIndent('    ').convert(
+      //     state.toJson(),
+      //   ),
+      // );
     }
   }
+
+  // void _initRegisterGuest(Invitee initialGuestData) {
+  //   AuthService().emailRegistration(email, password, context)
+  // }
 }
 
 class MemberFieldBloc extends GroupFieldBloc {

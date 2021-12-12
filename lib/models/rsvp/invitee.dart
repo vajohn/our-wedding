@@ -50,7 +50,7 @@ class Invitee {
 
 class AdditionalGuest {
   String? firstName;
-  String? lastName;
+  String? surname;
   String? contact;
   String? password;
   bool? contactType;
@@ -58,7 +58,7 @@ class AdditionalGuest {
 
   AdditionalGuest({
     this.firstName,
-    this.lastName,
+    this.surname,
     this.contact,
     this.contactType,
     this.dependant,
@@ -67,7 +67,7 @@ class AdditionalGuest {
 
   AdditionalGuest.fromJson(Map<String, dynamic> json) {
     firstName = json['firstName'];
-    lastName = json['lastName'];
+    surname = json['lastName'];
     contact = json['contact'];
     contactType = json['contactType'];
     dependant = json['dependant'];
@@ -77,7 +77,7 @@ class AdditionalGuest {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
+    data['lastName'] = this.surname;
     data['contact'] = this.contact;
     data['contactType'] = this.contactType;
     data['dependant'] = this.dependant;
@@ -88,7 +88,7 @@ class AdditionalGuest {
   @override
   String toString() => '''AdditionalGuest {
   firstName: $firstName,
-  lastName: $lastName,
+  lastName: $surname,
   contact: $contact,
   password: $password,
   dependant: $dependant,

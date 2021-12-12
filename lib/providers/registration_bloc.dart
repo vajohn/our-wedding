@@ -1,19 +1,26 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/models/rsvp/invitee.dart';
+import 'package:weddingrsvp/service/auth_service.dart';
 
 class ListFieldFormBloc extends FormBloc<String, String> {
   final initialGuest = TextFieldBloc(name: 'initialGuest');
-  final initialGuestPassword = TextFieldBloc(name: 'initialGuestPassword', validators: [FieldBlocValidators.required, FieldBlocValidators.passwordMin6Chars]);
+  final initialGuestPassword = TextFieldBloc(
+      name: 'initialGuestPassword',
+      validators: [
+        FieldBlocValidators.required,
+        FieldBlocValidators.passwordMin6Chars
+      ]);
   final initialContact = TextFieldBloc(
       name: 'initialContact',
       validators: [FieldBlocValidators.required, FieldBlocValidators.email]);
   final initialGuestContactType =
       BooleanFieldBloc(name: 'initialGuestContactType');
 
-  final additionalGuests =
-      ListFieldBloc<AdditionalGuestFieldBloc, dynamic>(name: 'additionalGuests');
+  final additionalGuests = ListFieldBloc<AdditionalGuestFieldBloc, dynamic>(
+      name: 'additionalGuests');
   final GuestRsvpData? guest;
   int? _additionalCount;
   bool? _visiblePassword = false;
@@ -102,39 +109,98 @@ class ListFieldFormBloc extends FormBloc<String, String> {
     _additionalCount = _additionalCount! - 1;
   }
 
-  void addToCount(int val){
+  void addToCount(int val) {
     _additionalCount = _additionalCount! + val;
   }
 
-  void viewPassword(){
+  void viewPassword() {
     _visiblePassword = !_visiblePassword!;
     emitLoaded();
   }
 
   int? get actualCount => _additionalCount;
+
   bool? get passwordVisibility => _visiblePassword;
 
   @override
   void onSubmitting() async {
-
     // With Serialization
     final initialGuestDataV2 = Invitee.fromJson(state.toJson());
     if (this.guest?.additional != actualCount) {
       emitDeleteFailed(failureResponse: 'Are you sure');
     } else {
+      if (initialGuestDataV2.initialGuestContactType!) {
+        emitFailure(failureResponse: 'Phone registration is currently offline');
+      } else {
+        String response = await AuthService().emailRegistration(
+            initialGuestDataV2.initialContact,
+            initialGuestDataV2.initialGuestPassword);
+
+        if (response.isEmpty) {
+          User? user = await AuthService().systemEmailLogin(
+              initialGuestDataV2.initialContact,
+              initialGuestDataV2.initialGuestPassword);
+          AuthService().addGuestDetails(
+              user,
+              GuestReservedData.fromJson({
+                'firstName': guest?.firstName,
+                'surname': guest?.surname,
+                'uuid': user?.uid,
+                'side': guest?.side
+              }));
+          if (initialGuestDataV2.additionalGuests!.isNotEmpty) {
+            List<AdditionalGuest> d = initialGuestDataV2.additionalGuests!
+                .where((guest) => !guest.dependant!)
+                .toList();
+            if (d.isNotEmpty) {
+              d.forEach((element) {
+                AuthService().addDependantGuest(user, element, guest?.side);
+              });
+            }
+            List<AdditionalGuest> withCredentials = initialGuestDataV2
+                .additionalGuests!
+                .where((guest) => guest.dependant!)
+                .toList();
+
+            withCredentials.forEach((independentGuest) async {
+              if (independentGuest.contactType!) {
+                emitFailure(
+                    failureResponse: 'Phone registration is currently offline');
+              } else {
+                String result = await AuthService().emailRegistration(
+                    independentGuest.contact, independentGuest.password);
+
+                if (result.isEmpty) {
+                  User? user = await AuthService().systemEmailLogin(
+                      independentGuest.contact, independentGuest.password);
+                  AuthService().addGuestDetails(
+                      user,
+                      GuestReservedData.fromJson({
+                        'firstName': independentGuest.firstName,
+                        'surname': independentGuest.surname,
+                        'uuid': user?.uid,
+                        'side': guest?.side
+                      }));
+                }
+              }
+            });
+          }
+          emitSuccess(
+            canSubmitAgain: true,
+            successResponse: 'Successful RSVP, proceed to login',
+          );
+        } else {
+          emitFailure(failureResponse: response);
+        }
+      }
       // _initRegisterGuest(initialGuestDataV2);
-      // emitSuccess(
-      //   canSubmitAgain: false,
-      //   successResponse: JsonEncoder.withIndent('    ').convert(
-      //     state.toJson(),
-      //   ),
-      // );
+
     }
   }
 
-  // void _initRegisterGuest(Invitee initialGuestData) {
-  //   AuthService().emailRegistration(email, password, context)
-  // }
+// void _initRegisterGuest(Invitee initialGuestData) {
+//   AuthService().emailRegistration(email, password, context)
+// }
 }
 
 class AdditionalGuestFieldBloc extends GroupFieldBloc {
@@ -170,7 +236,10 @@ class AdditionalGuestFieldBloc extends GroupFieldBloc {
         if (current.value) {
           this.contact.updateValidators(
               [FieldBlocValidators.required, FieldBlocValidators.email]);
-          this.password.updateValidators([FieldBlocValidators.required, FieldBlocValidators.passwordMin6Chars]);
+          this.password.updateValidators([
+            FieldBlocValidators.required,
+            FieldBlocValidators.passwordMin6Chars
+          ]);
         } else {
           this.contact.updateValidators([]);
           this.password.updateValidators([]);

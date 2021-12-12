@@ -67,7 +67,75 @@ class GuestRsvpData {
     return this.firstName! + ' ' + this.surname! == name;
   }
 
-  String? fullName(){
+  String? fullName() {
     return this.firstName! + ' ' + this.surname!;
+  }
+}
+
+class GuestReservedData {
+  String? firstName;
+  String? surname;
+  String? uuid;
+  String? side;
+  List<AdditionalGuestReservedData>? additional;
+
+  GuestReservedData({
+    this.firstName,
+    this.surname,
+    this.uuid,
+    this.side,
+    this.additional,
+  });
+
+  GuestReservedData.fromJson(Map<String, dynamic> json) {
+    firstName = json['firstName'];
+    surname = json['surname'];
+    uuid = json['uuid'];
+    side = json['side'];
+    if (json['additional'] != null) {
+      additional = <AdditionalGuestReservedData>[];
+      json['additional'].forEach((v) {
+        additional!.add(AdditionalGuestReservedData.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['firstName'] = this.firstName;
+    data['surname'] = this.surname;
+    data['side'] = this.side;
+    data['uuid'] = this.uuid;
+    if (this.additional != null) {
+      data['additional'] =
+          this.additional!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class AdditionalGuestReservedData {
+  String? firstName;
+  String? surname;
+  String? side;
+
+  AdditionalGuestReservedData({
+    this.firstName,
+    this.surname,
+    this.side,
+  });
+
+  AdditionalGuestReservedData.fromJson(Map<String, dynamic> json) {
+    firstName = json['firstName'];
+    surname = json['surname'];
+    side = json['side'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['firstName'] = this.firstName;
+    data['surname'] = this.surname;
+    data['side'] = this.side;
+    return data;
   }
 }

@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:provider/src/provider.dart';
+import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/models/rsvp/invitee.dart';
 import 'package:weddingrsvp/models/user_data.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
@@ -12,23 +12,22 @@ import 'package:weddingrsvp/util/router.gr.dart';
 enum MessageType { success, error, info }
 
 class AuthService {
-  Future<void> emailRegistration(
-      String email, String password, BuildContext context) async {
+  Future<String> emailRegistration(String? email, String? password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      updateUserData(userCredential.user);
+          .createUserWithEmailAndPassword(email: email!, password: password!);
+      addGuestRole(userCredential.user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        _sendToast('The password provided is too weak.', 'info', context);
+        return 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        _sendToast(
-            'The account already exists for that email.', 'error', context);
+        return 'The account already exists for that email.';
       }
     } catch (e) {
       print(e);
     } finally {
-      Loader.hide();
+
+      return '';
     }
   }
 
@@ -37,7 +36,7 @@ class AuthService {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      updateUserData(userCredential.user);
+      addGuestRole(userCredential.user);
       verifyAndLogin(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -48,6 +47,22 @@ class AuthService {
     }
 
     return false;
+  }
+
+  Future<User?> systemEmailLogin(String? email, String? password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email!, password: password!);
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+       print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+
+    return null;
   }
 
   // Future<bool> signInWithGoogle(BuildContext context) async {
@@ -154,7 +169,18 @@ class AuthService {
     );
   }
 
-  Future<void> updateUserData(User? user) async {
+  Future<void> addGuestDetails(
+      User? user, GuestReservedData guestReservedData) async {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    DocumentSnapshot document = await users.doc(user?.uid).get();
+
+    if (document.exists) {
+      users.doc(user?.uid).update(guestReservedData.toJson());
+    }
+  }
+
+  Future<void> addGuestRole(User? user) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     DocumentSnapshot document = await users.doc(user?.uid).get();
@@ -163,11 +189,11 @@ class AuthService {
       users.doc(user?.uid).set({
         'roles': ['guest']
       });
-    } else {}
+    }
   }
 
   Future<void> addDependantGuest(
-      User? user, AdditionalGuest additionalGuest) async {
+      User? user, AdditionalGuest additionalGuest, String? side) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     DocumentSnapshot document = await users.doc(user?.uid).get();
@@ -177,7 +203,8 @@ class AuthService {
         'dependants': [
           {
             'firstName': additionalGuest.firstName,
-            'surname': additionalGuest.lastName
+            'surname': additionalGuest.surname,
+            'side': side
           }
         ]
       });
@@ -204,27 +231,5 @@ class AuthService {
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     return UserData.fromJson(documentSnapshot.data());
-  }
-
-  void autoRegister(List<Map<String, dynamic>> guests, BuildContext context) {
-    bool loading = true;
-    showDialog(
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: loading
-                ? SizedBox(
-                    height: 200,
-                    child: CircularProgressIndicator(),
-                  )
-                : Text(
-                    'RSVP complete, please check your email or sms inbox for your credentials'),
-          );
-        },
-        context: context);
-
-    // loading = false;
-    //todo register from largest to smallest index
-    //todo random 4 digits on name for password
   }
 }

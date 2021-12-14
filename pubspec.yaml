@@ -32,14 +32,15 @@ dependencies:
   provider: ^6.0.1
   dropdown_search: ^2.0.1
   flutter_form_bloc: ^0.29.3
-dev_dependencies:
+  file_picker: ^4.2.7
+  excel: any
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.9.2
 
   auto_route_generator: ^3.2.0
   build_runner:
-  #dependency_overrides:
+#dependency_overrides:
 #  auto_route:
 #    git:
 #      url: https://github.com/Agondev/auto_route_library

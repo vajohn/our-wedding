@@ -1,19 +1,22 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:csv/csv.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:developer' as dev;
 
-Future<String?> excelToJson() async {
+import 'package:flutter/services.dart';
+
+Future<List?> excelToJson() async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
-    allowedExtensions: ['xls', 'xlsx', 'csv'],
+    allowedExtensions: ['xls', 'xlsx'],
     allowMultiple: false,
   );
   if (result != null) {
-    File excelFile = File(result.files.single.path!);
-    Uint8List bytes = excelFile.readAsBytesSync();
-    Excel excel = Excel.decodeBytes(bytes);
+    Uint8List? bytes = result.files.single.bytes;
+    Excel excel = Excel.decodeBytes(bytes!);
     int i = 0;
     List<dynamic> keys = [];
     var jsonMap = [];
@@ -26,14 +29,14 @@ Future<String?> excelToJson() async {
           keys = row;
           i++;
         } else {
-          var temp = {};
+          Map<dynamic, dynamic> temp = {};
           int j = 0;
           String tk = '';
-          for (var key in keys) {
-            tk = '\"${key.toString()}\"';
-            temp[tk] = (row[j].runtimeType == String)
-                ? '\"${row[j].toString()}\"'
-                : row[j];
+          for (Data key in keys) {
+            tk = key.value.toString();
+            temp[tk] = (row[j]!.value.runtimeType == String)
+                ? '\"${row[j]!.value.toString()}\"'
+                : row[j]!.value;
             j++;
           }
 
@@ -41,18 +44,18 @@ Future<String?> excelToJson() async {
         }
       }
     }
-    dev.log(
-      jsonMap.length.toString(),
-      name: 'excel to json',
-    );
-    dev.log(jsonMap.toString(), name: 'excel to json');
-    String fullJson =
-        jsonMap.toString().substring(1, jsonMap.toString().length - 1);
-    dev.log(
-      fullJson.toString(),
-      name: 'excel to json',
-    );
-    return fullJson;
+    // dev.log(
+    //   jsonMap.length.toString(),
+    //   name: 'excel to json',
+    // );
+    // dev.log(jsonMap.toString(), name: 'excel to json');
+    // String fullJson =
+    //     jsonMap.toString().substring(1, jsonMap.toString().length - 1);
+    // dev.log(
+    //   fullJson.toString(),
+    //   name: 'excel to json',
+    // );
+    return jsonMap;
   }
 
   return null;
@@ -133,3 +136,43 @@ Future<String?> excelToJson() async {
 //
 //   print(sheetObject);
 // }
+
+void openFileExplorer() async {
+  List<PlatformFile>? _paths;
+  String? _extension="csv";
+  FileType _pickingType = FileType.custom;
+  try {
+
+    _paths = (await FilePicker.platform.pickFiles(
+      type: _pickingType,
+      allowMultiple: false,
+      allowedExtensions: (_extension.isNotEmpty)
+          ? _extension.replaceAll(' ', '').split(',')
+          : null,
+    ))
+        ?.files;
+  } on PlatformException catch (e) {
+    print("Unsupported operation" + e.toString());
+  } catch (ex) {
+    print(ex);
+  }
+  // if (!mounted) return;
+  // setState(() {+
+  final input = new File('a/csv/file.txt').openRead();
+  final fields = await input.transform(utf8.decoder).transform(new CsvToListConverter()).toList();
+    // openFile(_paths![0].path);
+    // print(_paths);
+    // print("File path ${_paths[0]}");
+    // print(_paths.first.extension);
+  //
+  // });
+}
+openFile(filepath) async
+{
+  File f = new File(filepath);
+  print("CSV to List");
+  final input = f.openRead();
+  final fields = await input.transform(utf8.decoder).transform(new CsvToListConverter()).toList();
+  print(fields);
+
+}

@@ -48,10 +48,6 @@ class AppRouter extends _i2.RootStackRouter {
       return _i2.MaterialPageX<dynamic>(
           routeData: routeData, child: const _i1.AdminDashboard());
     },
-    BrideGuests.name: (routeData) {
-      return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i1.BrideGuests());
-    },
     MainMenu.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
           routeData: routeData, child: const _i1.MainMenu());
@@ -60,9 +56,13 @@ class AppRouter extends _i2.RootStackRouter {
       return _i2.MaterialPageX<dynamic>(
           routeData: routeData, child: const _i1.StarterMenu());
     },
-    GroomGuests.name: (routeData) {
+    PendingGuests.name: (routeData) {
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i1.GroomGuests());
+          routeData: routeData, child: const _i1.PendingGuests());
+    },
+    ReservedGuests.name: (routeData) {
+      return _i2.MaterialPageX<dynamic>(
+          routeData: routeData, child: const _i1.ReservedGuests());
     }
   };
 
@@ -72,31 +72,23 @@ class AppRouter extends _i2.RootStackRouter {
         _i2.RouteConfig(LoginRoute.name, path: 'login'),
         _i2.RouteConfig(SplitRsvp.name, path: '/split-rsvp'),
         _i2.RouteConfig(DynamicRegistrationRouter.name, path: 'registration'),
-        _i2.RouteConfig(DashboardRouter.name, path: 'dashboard', children: [
-          _i2.RouteConfig('#redirect',
-              path: '',
-              parent: DashboardRouter.name,
-              redirectTo: 'bride',
-              fullMatch: true),
-          _i2.RouteConfig(BrideGuests.name,
-              path: 'bride', parent: DashboardRouter.name)
-        ]),
+        _i2.RouteConfig(DashboardRouter.name, path: 'dashboard'),
         _i2.RouteConfig(AdminDashboardRouter.name, path: 'admin', guards: [
           authGuard
         ], children: [
           _i2.RouteConfig('#redirect',
               path: '',
               parent: AdminDashboardRouter.name,
-              redirectTo: 'menu/main',
+              redirectTo: 'main',
               fullMatch: true),
           _i2.RouteConfig(MainMenu.name,
-              path: 'menu/main', parent: AdminDashboardRouter.name),
+              path: 'main', parent: AdminDashboardRouter.name),
           _i2.RouteConfig(StarterMenu.name,
-              path: 'menu/starter', parent: AdminDashboardRouter.name),
-          _i2.RouteConfig(BrideGuests.name,
-              path: 'bride', parent: AdminDashboardRouter.name),
-          _i2.RouteConfig(GroomGuests.name,
-              path: 'groom', parent: AdminDashboardRouter.name)
+              path: 'starter', parent: AdminDashboardRouter.name),
+          _i2.RouteConfig(PendingGuests.name,
+              path: 'guests', parent: AdminDashboardRouter.name),
+          _i2.RouteConfig(ReservedGuests.name,
+              path: 'reserved', parent: AdminDashboardRouter.name)
         ])
       ];
 }
@@ -137,9 +129,7 @@ class DynamicRegistrationRouter extends _i2.PageRouteInfo<void> {
 /// generated route for
 /// [_i1.Dashboard]
 class DashboardRouter extends _i2.PageRouteInfo<void> {
-  const DashboardRouter({List<_i2.PageRouteInfo>? children})
-      : super(DashboardRouter.name,
-            path: 'dashboard', initialChildren: children);
+  const DashboardRouter() : super(DashboardRouter.name, path: 'dashboard');
 
   static const String name = 'DashboardRouter';
 }
@@ -155,17 +145,9 @@ class AdminDashboardRouter extends _i2.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i1.BrideGuests]
-class BrideGuests extends _i2.PageRouteInfo<void> {
-  const BrideGuests() : super(BrideGuests.name, path: 'bride');
-
-  static const String name = 'BrideGuests';
-}
-
-/// generated route for
 /// [_i1.MainMenu]
 class MainMenu extends _i2.PageRouteInfo<void> {
-  const MainMenu() : super(MainMenu.name, path: 'menu/main');
+  const MainMenu() : super(MainMenu.name, path: 'main');
 
   static const String name = 'MainMenu';
 }
@@ -173,15 +155,23 @@ class MainMenu extends _i2.PageRouteInfo<void> {
 /// generated route for
 /// [_i1.StarterMenu]
 class StarterMenu extends _i2.PageRouteInfo<void> {
-  const StarterMenu() : super(StarterMenu.name, path: 'menu/starter');
+  const StarterMenu() : super(StarterMenu.name, path: 'starter');
 
   static const String name = 'StarterMenu';
 }
 
 /// generated route for
-/// [_i1.GroomGuests]
-class GroomGuests extends _i2.PageRouteInfo<void> {
-  const GroomGuests() : super(GroomGuests.name, path: 'groom');
+/// [_i1.PendingGuests]
+class PendingGuests extends _i2.PageRouteInfo<void> {
+  const PendingGuests() : super(PendingGuests.name, path: 'guests');
 
-  static const String name = 'GroomGuests';
+  static const String name = 'PendingGuests';
+}
+
+/// generated route for
+/// [_i1.ReservedGuests]
+class ReservedGuests extends _i2.PageRouteInfo<void> {
+  const ReservedGuests() : super(ReservedGuests.name, path: 'reserved');
+
+  static const String name = 'ReservedGuests';
 }

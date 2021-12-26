@@ -33,12 +33,12 @@ PopupMenuButton popMenuItem(String title, String? description,
 void _openRoute(String menu, BuildContext context) {
 
   switch (menu) {
-    case 'Bride':
-      context.pushRoute(AdminDashboardRouter(children: [BrideGuests()]));
+    case 'Pending':
+      context.pushRoute(AdminDashboardRouter(children: [PendingGuests()]));
       break;
-    case 'Groom':
-      context.pushRoute(AdminDashboardRouter(children: [GroomGuests()]));
-      AutoRouter.of(context).pushNamed(GroomGuests.name);
+    case 'RSVP':
+      context.pushRoute(AdminDashboardRouter(children: [ReservedGuests()]));
+      // AutoRouter.of(context).pushNamed(GroomGuests.name);
       break;
     case 'Main':
       AutoRouter.of(context).push(AdminDashboardRouter(children: [MainMenu()]));

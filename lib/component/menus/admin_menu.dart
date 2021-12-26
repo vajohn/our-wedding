@@ -4,7 +4,7 @@ import 'pop_menu_item.dart';
 
 List<Widget> adminMenu(bool orientation, BuildContext context) {
   List<PopupMenuButton> menus = [
-    popMenuItem('Guests', null, ['Bride', 'Groom'], context),
+    popMenuItem('Guests', null, ['Pending', 'RSVP'], context),
     popMenuItem('Menus', null, ['Entree', 'Main', 'Dessert'], context),
     popMenuItem('Drinks', null, ['Bar', 'Orders'], context),
     popMenuItem('Sitting', null, ['Tables', 'Reserved'], context),

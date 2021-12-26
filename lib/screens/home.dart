@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset('assets/images/altLogo2.png',height: 300,),
               Text(
                 'Sat 12 March 2022',
                 style: Theme.of(context).textTheme.headline4,

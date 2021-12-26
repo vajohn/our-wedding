@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 class GuestRsvpListData {
   late List<GuestRsvpData>? guests;
 
@@ -47,6 +49,17 @@ class GuestRsvpData {
     firstName = json['firstName'];
     surname = json['surname'];
     uuid = json['uuid'];
+    side = json['side'];
+    additional = json['additional'];
+    dependant = json['dependant'];
+    guardian = json['guardian'];
+  }
+
+  GuestRsvpData.fromJsonLink(LinkedHashMap<dynamic, dynamic> json) {
+    firstName = json['firstName'];
+    surname = json['surname'];
+    firstName = json['firstName'];
+    surname = json['surname'];
     side = json['side'];
     additional = json['additional'];
     dependant = json['dependant'];

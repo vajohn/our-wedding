@@ -17,7 +17,6 @@ import 'package:weddingrsvp/screens/screens.dart';
         name: 'DashboardRouter',
         page: Dashboard,
         children: [
-          AutoRoute(path: 'bride', page: BrideGuests, initial: true),
         ]),
     AutoRoute(
         path: 'admin',
@@ -27,10 +26,10 @@ import 'package:weddingrsvp/screens/screens.dart';
           AuthGuard
         ],
         children: [
-          AutoRoute(path: 'menu/main', page: MainMenu, initial: true),
-          AutoRoute(path: 'menu/starter', page: StarterMenu),
-          AutoRoute(path: 'bride', page: BrideGuests),
-          AutoRoute(path: 'groom', page: GroomGuests)
+          AutoRoute(path: 'main', page: MainMenu, initial: true),
+          AutoRoute(path: 'starter', page: StarterMenu),
+          AutoRoute(path: 'guests', page: PendingGuests),
+          AutoRoute(path: 'reserved', page: ReservedGuests)
         ]),
   ],
 )

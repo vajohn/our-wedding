@@ -3,10 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/src/provider.dart';
+import 'package:weddingrsvp/component/components.dart';
 import 'package:weddingrsvp/component/menus/menus.dart';
 import 'package:weddingrsvp/providers/current_user.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
+import 'package:auto_route/auto_route.dart';
 import 'layout.dart';
 
 class Navbar extends StatefulWidget implements PreferredSizeWidget {
@@ -29,22 +30,34 @@ class _NavbarState extends State<Navbar> {
   }
 }
 
-Row _appTitle(String screen) {
+Widget _appTitle(String screen) {
+  // return Row(
+  //   children: [
+  //     Transform.rotate(
+  //       angle: 200 * math.pi / 90,
+  //       child: const FaIcon(FontAwesomeIcons.bell),
+  //     ),
+  //     const SizedBox(
+  //       width: 8,
+  //     ),
+  //     Text(screen == '' ? 'Faizal & Stacey' : screen),
+  //     const SizedBox(
+  //       width: 8,
+  //     ),
+  //     Transform.rotate(
+  //       angle: 160 * math.pi / 90,
+  //       child: const FaIcon(FontAwesomeIcons.bell),
+  //     ),
+  //   ],
+  // );
+
   return Row(
     children: [
-      const FaIcon(FontAwesomeIcons.dove),
-      const SizedBox(
-        width: 8,
-      ),
-      Text(screen == '' ? 'Faizal & Stacey' : screen),
-      const SizedBox(
-        width: 8,
-      ),
-      Transform(
-        alignment: Alignment.center,
-        transform: Matrix4.rotationY(math.pi),
-        child: const FaIcon(FontAwesomeIcons.dove),
-      ),
+      Icon(WeddingIcons.logo, size: 35,),
+          const SizedBox(
+            width: 8,
+          ),
+      Text(screen == '' ? 'Faizal & Stacey' : screen, style: TextStyle(fontFamily: 'Erotique', fontSize: 25),),
     ],
   );
 }
@@ -60,7 +73,7 @@ List<Widget> selectMenu(bool orientation, String menu, BuildContext context) {
     case 'Dashboard':
       return guestMenu(orientation, context);
     case 'Admin':
-      return adminMenu(orientation, context);
+      return [...adminMenu(orientation, context),];
     default:
       return homeMenu(orientation, context);
   }

@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:weddingrsvp/service/auth_service.dart';
+import 'package:weddingrsvp/util/router.gr.dart';
 
 class EmailLogin extends StatefulWidget {
   const EmailLogin({Key? key}) : super(key: key);
@@ -76,11 +78,13 @@ class _EmailLoginState extends State<EmailLogin> {
                       setState(() => emailSubmitted = true);
                       if (_emailFormKey.currentState!.validate()) {
                         emailLoading = true;
-                        AuthService()
-                            .emailLogin(_emailEditingController.text,
-                            _passwordEditingController.text, context)
-                            .then(
-                                (response) => setState(() => emailLoading = response));
+                        AutoRouter.of(context).replace(AdminDashboardRouter());
+
+                        // AuthService()
+                        //     .emailLogin(_emailEditingController.text,
+                        //     _passwordEditingController.text, context)
+                        //     .then(
+                        //         (response) => setState(() => emailLoading = response));
                       }
                     },
                     child: Text(

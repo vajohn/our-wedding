@@ -289,16 +289,13 @@ class _SplitRsvpState extends State<SplitRsvp> with TickerProviderStateMixin {
         title: Text(
           item?.fullName() ?? '',
         ),
-        subtitle: Text(
-          item?.additional?.toString() ?? '',
-        ),
         leading: Container(
           decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(colors: [
                 Colors.black45,
                 Colors.grey,
-              ], begin: Alignment.bottomLeft, end: Alignment.topRight)),
+              ], begin: Alignment.bottomLeft, end: Alignment.topRight),),
           child: CircleAvatar(
             child: Icon(FontAwesomeIcons.user),
             backgroundColor: Colors.transparent,

@@ -58,6 +58,13 @@ class DataService {
       dev.log('Error >>removeFromGuestList>>> $e');
     }
   }
+  void editGuestOnList(GuestRsvpData? guest) async {
+    try {
+      await FirebaseFirestore.instance.collection('guests').doc(guest!.uuid).update(guest.toJson());
+    } catch (e) {
+      dev.log('Error >>removeFromGuestList>>> $e');
+    }
+  }
 
   void addToGuestList(GuestRsvpData? guest) async {
     try {

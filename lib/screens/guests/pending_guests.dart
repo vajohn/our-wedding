@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:weddingrsvp/component/components.dart';
+import 'package:weddingrsvp/component/guest_modals.dart';
 import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/service/data.dart';
 import 'package:weddingrsvp/util/excelToJson.dart';
@@ -71,7 +72,8 @@ class _PendingGuestsState extends State<PendingGuests> {
                     Container(
                       width: 150,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () =>
+                            GuestModals().addOrEditPendingGuest(context, null),
                         style: ButtonStyle(
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.black54),
@@ -161,7 +163,7 @@ class _PendingGuestsState extends State<PendingGuests> {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      'Guardian',
+                                      'Dependant',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -170,7 +172,7 @@ class _PendingGuestsState extends State<PendingGuests> {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      'Dependant',
+                                      'Guardian',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -206,6 +208,8 @@ class _PendingGuestsState extends State<PendingGuests> {
     guests?.guests?.forEach((GuestRsvpData guest) {
       _g.add(
         DataRow(
+          onSelectChanged: (_) =>
+              GuestModals().addOrEditPendingGuest(context, guest),
           cells: [
             DataCell(
               Text(
@@ -235,9 +239,9 @@ class _PendingGuestsState extends State<PendingGuests> {
                 widthFactor: 3.0,
                 child: Icon(
                   guest.dependant!
-                      ? WeddingIcons.bride
-                      : FontAwesomeIcons.checkSquare,
-                  color: guest.dependant! ? Colors.redAccent : Colors.green,
+                      ? FontAwesomeIcons.checkSquare
+                      : FontAwesomeIcons.minusSquare,
+                  color: guest.dependant! ? Colors.green : Colors.redAccent,
                 ),
               ),
             ),
@@ -246,9 +250,9 @@ class _PendingGuestsState extends State<PendingGuests> {
                 widthFactor: 3.0,
                 child: Icon(
                   guest.guardian!
-                      ? FontAwesomeIcons.minusSquare
-                      : FontAwesomeIcons.checkSquare,
-                  color: guest.guardian! ? Colors.redAccent : Colors.green,
+                      ? FontAwesomeIcons.checkSquare
+                      : FontAwesomeIcons.minusSquare,
+                  color: guest.guardian! ? Colors.green : Colors.redAccent,
                 ),
               ),
             ),

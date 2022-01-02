@@ -6,6 +6,7 @@ import 'package:weddingrsvp/service/data.dart';
 import 'package:weddingrsvp/util/excelToJson.dart';
 import 'package:weddingrsvp/util/extensions.dart';
 import 'dart:developer' as dev;
+
 class PendingGuests extends StatefulWidget {
   const PendingGuests({Key? key}) : super(key: key);
 
@@ -260,15 +261,15 @@ class _PendingGuestsState extends State<PendingGuests> {
   }
 
   Future<GuestRsvpListData> fetchGuest() async {
-    return await DataService().mockGuestList();
+    return await DataService().guestList();
   }
 
   void addByExcel() async {
-    excelToJson().then((excelSheet) => excelSheet!.forEach((rowData) =>
-        DataService().addToGuestList(GuestRsvpData.fromJsonLink(rowData)))).catchError((error)=> dev.log(error));
+    excelToJson()
+        .then((excelSheet) => excelSheet!.forEach((rowData) =>
+            DataService().addToGuestList(GuestRsvpData.fromJsonLink(rowData))))
+        .catchError((error) => dev.log('$error'));
   }
 
-
-  perform(Object) async{
-  }
+  perform(Object) async {}
 }

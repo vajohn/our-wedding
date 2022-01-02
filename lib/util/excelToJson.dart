@@ -15,7 +15,13 @@ Future<List?> excelToJson() async {
     allowMultiple: false,
   );
   if (result != null) {
-    Uint8List? bytes = result.files.single.bytes;
+    Uint8List? bytes;
+    if (result.files.single.bytes != null) {
+      bytes = result.files.single.bytes;
+    } else {
+      final file = File(result.files.single.path!);
+      bytes = file.readAsBytesSync();
+    }
     Excel excel = Excel.decodeBytes(bytes!);
     int i = 0;
     List<dynamic> keys = [];
@@ -34,9 +40,10 @@ Future<List?> excelToJson() async {
           String tk = '';
           for (Data key in keys) {
             tk = key.value.toString();
-            temp[tk] = (row[j]!.value.runtimeType == String)
-                ? '\"${row[j]!.value.toString()}\"'
-                : row[j]!.value;
+            // temp[tk] = (row[j]!.value.runtimeType == String)
+            //     ? '\"${row[j]!.value.toString()}\"'
+            //     : row[j]!.value;
+            temp[tk] = row[j]!.value;
             j++;
           }
 
@@ -139,10 +146,9 @@ Future<List?> excelToJson() async {
 
 void openFileExplorer() async {
   List<PlatformFile>? _paths;
-  String? _extension="csv";
+  String? _extension = "csv";
   FileType _pickingType = FileType.custom;
   try {
-
     _paths = (await FilePicker.platform.pickFiles(
       type: _pickingType,
       allowMultiple: false,
@@ -159,20 +165,56 @@ void openFileExplorer() async {
   // if (!mounted) return;
   // setState(() {+
   final input = new File('a/csv/file.txt').openRead();
-  final fields = await input.transform(utf8.decoder).transform(new CsvToListConverter()).toList();
-    // openFile(_paths![0].path);
-    // print(_paths);
-    // print("File path ${_paths[0]}");
-    // print(_paths.first.extension);
+  final fields = await input
+      .transform(utf8.decoder)
+      .transform(new CsvToListConverter())
+      .toList();
+  // openFile(_paths![0].path);
+  // print(_paths);
+  // print("File path ${_paths[0]}");
+  // print(_paths.first.extension);
   //
   // });
 }
-openFile(filepath) async
-{
-  File f = new File(filepath);
-  print("CSV to List");
-  final input = f.openRead();
-  final fields = await input.transform(utf8.decoder).transform(new CsvToListConverter()).toList();
-  print(fields);
-
-}
+// Future<void> excelToJson2(String fileName, String fileDirectory) async {
+//   ByteData data = await rootBundle.load(fileDirectory);
+//   var bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+//   var excel = Excel.decodeBytes(bytes);
+//   int i = 0;
+//   List<dynamic> keys = new List<dynamic>();
+//   List<Map<String, dynamic>> json = new List<Map<String, dynamic>>();
+//   for (var table in excel.tables.keys) {
+//     for (var row in excel.tables[table].rows) {
+//       if (i == 0) {
+//         keys = row;
+//         i++;
+//       } else {
+//         Map<String, dynamic> temp = Map<String, dynamic>();
+//         int j = 0;
+//         String tk = '';
+//         for (var key in keys) {
+//           tk = '"' + key + '"';
+//           temp[tk] = (row[j].runtimeType == String)
+//               ? '"' + row[j].toString() + '"'
+//               : row[j];
+//           j++;
+//         }
+//         json.add(temp);
+//       }
+//     }
+//   }
+//   print(json.length);
+//   String fullJson = json.toString().substring(1, json
+//       .toString()
+//       .length - 1);
+//
+//   fullJson = '{ "DATA" : [$fullJson]}';
+//   final directory = await getExternalStorageDirectory();
+//
+//   File file = await File('${directory.path}/$fileName.json').create();
+//   await file.writeAsString(fullJson).then((value) =>
+//       scaffoldKey.currentState
+//           .showSnackBar(SnackBar(content: Text("Completed")))
+//   );
+//   print(file.exists().toString());
+// }

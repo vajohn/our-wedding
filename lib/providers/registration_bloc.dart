@@ -1,9 +1,9 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:weddingrsvp/models/guests.dart';
 import 'package:weddingrsvp/models/rsvp/invitee.dart';
 import 'package:weddingrsvp/service/auth_service.dart';
+import 'package:weddingrsvp/service/data.dart';
 
 class ListFieldFormBloc extends FormBloc<String, String> {
   final initialGuest = TextFieldBloc(name: 'initialGuest');
@@ -130,7 +130,13 @@ class ListFieldFormBloc extends FormBloc<String, String> {
       emitDeleteFailed(failureResponse: 'Are you sure');
     } else {
       if (initialGuestDataV2.initialGuestContactType!) {
-        emitFailure(failureResponse: 'Phone registration is currently offline');
+        // emitFailure(failureResponse: 'Phone registration is currently offline');
+        DataService().addGuestPhoneNumber(GuestReservedData.fromJson({
+          'firstName': guest?.firstName,
+          'surname': guest?.surname,
+          'uuid': initialGuestDataV2.initialContact,
+          'side': guest?.side
+        }));
       } else {
         String response = await AuthService().emailRegistration(
             initialGuestDataV2.initialContact,

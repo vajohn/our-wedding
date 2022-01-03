@@ -58,9 +58,13 @@ class DataService {
       dev.log('Error >>removeFromGuestList>>> $e');
     }
   }
+
   void editGuestOnList(GuestRsvpData? guest) async {
     try {
-      await FirebaseFirestore.instance.collection('guests').doc(guest!.uuid).update(guest.toJson());
+      await FirebaseFirestore.instance
+          .collection('guests')
+          .doc(guest!.uuid)
+          .update(guest.toJson());
     } catch (e) {
       dev.log('Error >>removeFromGuestList>>> $e');
     }
@@ -68,9 +72,47 @@ class DataService {
 
   void addToGuestList(GuestRsvpData? guest) async {
     try {
-      await FirebaseFirestore.instance.collection('guests').add(guest!.toJson());
+      await FirebaseFirestore.instance
+          .collection('guests')
+          .add(guest!.toJson());
     } catch (e) {
       dev.log('Error >>addToGuestList>> $e');
     }
+  }
+
+  Future<List<GuestReservedData>> pendingList() async {
+    List<GuestReservedData> localPending = [];
+    await FirebaseFirestore.instance
+        .collection('pending')
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              localPending.add(GuestReservedData.fromJson(element.data()));
+            }));
+    return localPending;
+  }
+
+  Future<void> addGuestPhoneNumber(GuestReservedData? guest) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pending')
+          .add(guest!.toJson());
+    } catch (e) {
+      dev.log('Error >>addGuestPhoneNumber>> $e');
+    }
+  }
+
+  void removeGuestPhoneNumber(String? uuid) async {
+    try {
+      await FirebaseFirestore.instance.collection('pending').doc(uuid).delete();
+    } catch (e) {
+      dev.log('Error >>removeGuestPhoneNumber>>> $e');
+    }
+  }
+
+  GuestReservedData? findPhoneNumber(String? phone) {
+    GuestReservedData? foundGuest;
+    pendingList().then((pendingList) => foundGuest =
+        pendingList.where((pending) => pending.uuid == phone).first);
+    return foundGuest;
   }
 }
